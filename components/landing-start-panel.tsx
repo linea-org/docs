@@ -30,20 +30,20 @@ export function LandingStartPanel() {
           <Link
             key={step.href}
             href={step.href}
-            className="group border-fd-border bg-fd-card/30 hover:border-fd-primary/50 hover:bg-fd-card focus-visible:outline-fd-ring flex items-start gap-3 rounded-lg border px-4 py-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
+            className="group flex items-start gap-3 rounded-lg border border-fd-border bg-fd-card/30 px-4 py-4 transition-colors hover:border-fd-primary/50 hover:bg-fd-card focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-ring"
           >
-            <span className="text-fd-muted-foreground pt-0.5 font-mono text-xs">
+            <span className="pt-0.5 font-mono text-xs text-fd-muted-foreground">
               0{index + 1}
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium">{step.title}</p>
-              <p className="text-fd-muted-foreground mt-1 text-sm leading-6">
+              <p className="mt-1 text-sm leading-6 text-fd-muted-foreground">
                 {step.description}
               </p>
             </div>
             <ArrowUpRight
               aria-hidden="true"
-              className="text-fd-muted-foreground group-hover:text-fd-foreground mt-0.5 size-4 shrink-0"
+              className="mt-0.5 size-4 shrink-0 text-fd-muted-foreground group-hover:text-fd-foreground"
             />
           </Link>
         ))}

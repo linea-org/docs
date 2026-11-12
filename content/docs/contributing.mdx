@@ -69,8 +69,10 @@ review findings before merging.
 
 ## Contribute documentation
 
-The docs site lives in `apps/docs`; pages are in `apps/docs/content/docs` and
-use the same PR process as code. The following steps cover docs-specific work.
+The docs site lives in its own repository,
+[linea-org/docs](https://github.com/linea-org/docs); pages are in
+`content/docs` and use the same PR process as code. The following steps cover
+docs-specific work and run inside that repository.
 
 ## Add or edit a page
 
@@ -100,10 +102,10 @@ new page does not appear in an arbitrary location.
 ### Preview and verify
 
 ```bash
-pnpm exec turbo dev --filter=@linea/docs
-pnpm --filter @linea/docs lint
-pnpm --filter @linea/docs typecheck
-pnpm --filter @linea/docs build
+pnpm dev
+pnpm lint
+pnpm typecheck
+pnpm build
 pnpm format:check
 ```
 
@@ -138,7 +140,7 @@ flowchart LR
 ### Tabs and callouts
 
 <Tabs items={["pnpm", "npm"]}>
-  <Tab value="pnpm">`pnpm --filter @linea/docs dev`</Tab>
+  <Tab value="pnpm">`pnpm dev`</Tab>
   <Tab value="npm">
     The repository standard is pnpm; npm is not supported for workspace tasks.
   </Tab>

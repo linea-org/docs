@@ -47,14 +47,14 @@ contracts and behavior that must remain consistent across those applications.
 
 ### Deployable applications
 
-| Package                  | Owns                                                | Does not own              |
-| ------------------------ | --------------------------------------------------- | ------------------------- |
-| `apps/web`               | Workflow authoring and operational UI               | Credentials and execution |
-| `apps/platform-api`      | HTTP contracts, identity, policy, and orchestration | Long-running execution    |
-| `apps/execution-worker`  | Graph execution and checkpoint recovery             | Public HTTP contracts     |
-| `apps/background-worker` | Schedules and asynchronous maintenance              | Interactive execution     |
-| `apps/mobile`            | Workspace-member monitoring and approvals           | End-User identity         |
-| `apps/docs`              | Developer and contributor documentation             | Product runtime           |
+| Package                                                                     | Owns                                                | Does not own              |
+| --------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------- |
+| `apps/web`                                                                  | Workflow authoring and operational UI               | Credentials and execution |
+| `apps/platform-api`                                                         | HTTP contracts, identity, policy, and orchestration | Long-running execution    |
+| `apps/execution-worker`                                                     | Graph execution and checkpoint recovery             | Public HTTP contracts     |
+| `apps/background-worker`                                                    | Schedules and asynchronous maintenance              | Interactive execution     |
+| `apps/mobile`                                                               | Workspace-member monitoring and approvals           | End-User identity         |
+| [`linea-org/docs`](https://github.com/linea-org/docs) (separate repository) | Developer and contributor documentation             | Product runtime           |
 
 ### Shared foundations
 

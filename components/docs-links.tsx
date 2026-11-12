@@ -13,13 +13,13 @@ export function DocsLinks({ items }: { items: DocsLinkItem[] }) {
         <Link
           key={item.href}
           href={item.href}
-          className="border-fd-border group border-t py-3 last:border-b"
+          className="group border-t border-fd-border py-3 last:border-b"
         >
-          <p className="font-display group-hover:text-fd-primary font-semibold tracking-tight">
+          <p className="font-display font-semibold tracking-tight group-hover:text-fd-primary">
             {item.title}
           </p>
           {item.description && (
-            <p className="text-fd-muted-foreground mt-1 text-sm leading-6">
+            <p className="mt-1 text-sm leading-6 text-fd-muted-foreground">
               {item.description}
             </p>
           )}

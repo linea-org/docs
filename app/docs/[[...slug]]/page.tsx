@@ -40,7 +40,7 @@ export default async function Page(props: DocsPageProps) {
         style: "clerk",
       }}
     >
-      <header className="border-fd-border border-b pb-6">
+      <header className="border-b border-fd-border pb-6">
         <div className="grid grid-cols-1 items-start gap-x-3 gap-y-2 md:grid-cols-[minmax(0,1fr)_auto]">
           <DocsTitle className="font-display tracking-tight md:col-start-1 md:row-start-1">
             {page.data.title}

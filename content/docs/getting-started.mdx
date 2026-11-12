@@ -48,15 +48,22 @@ pnpm dev
 
 </Steps>
 
-The web application runs at `http://localhost:3001`, the API at
-`http://localhost:3000`, and this documentation site at
-`http://localhost:3002`.
+The web application runs at `http://localhost:3001` and the API at
+`http://localhost:3000`.
 
-## Run only the docs
+## Run the docs site
+
+This documentation site lives in its own repository,
+[linea-org/docs](https://github.com/linea-org/docs), and runs on its own:
 
 ```bash
-pnpm exec turbo dev --filter=@linea/docs
+git clone https://github.com/linea-org/docs.git
+cd docs
+pnpm install
+pnpm dev
 ```
+
+It serves at `http://localhost:3002`.
 
 ## Configure the docs assistant
 
@@ -108,10 +115,11 @@ UPSTASH_VECTOR_REST_URL="your-index-url"
 UPSTASH_VECTOR_REST_TOKEN="your-index-token"
 ```
 
-Ingest the MDX documentation after configuring those variables:
+Ingest the MDX documentation after configuring those variables, from the docs
+repository:
 
 ```bash
-pnpm --filter @linea/docs ingest
+pnpm ingest
 ```
 
 The command writes to a new namespace and prints the

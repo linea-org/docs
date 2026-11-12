@@ -72,19 +72,19 @@ export function LandingResources() {
             <Link
               key={href}
               href={href}
-              className="group border-fd-border bg-fd-card/30 hover:border-fd-primary/50 hover:bg-fd-card focus-visible:outline-fd-ring flex min-w-0 flex-col overflow-hidden rounded-lg border transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
+              className="group flex min-w-0 flex-col overflow-hidden rounded-lg border border-fd-border bg-fd-card/30 transition-colors hover:border-fd-primary/50 hover:bg-fd-card focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-ring"
             >
               {details && (
                 <div
                   aria-hidden="true"
-                  className="border-fd-border bg-fd-muted/40 flex min-h-52 flex-col justify-between border-b p-6"
+                  className="flex min-h-52 flex-col justify-between border-b border-fd-border bg-fd-muted/40 p-6"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-fd-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
+                    <span className="font-mono text-[10px] tracking-[0.18em] text-fd-muted-foreground uppercase">
                       {label}
                     </span>
                     <Icon
-                      className="text-fd-primary size-6"
+                      className="size-6 text-fd-primary"
                       strokeWidth={1.5}
                     />
                   </div>
@@ -92,10 +92,10 @@ export function LandingResources() {
                     {details.map((detail, index) => (
                       <div
                         key={detail}
-                        className="border-fd-border bg-fd-background/80 flex items-center gap-3 rounded border px-3 py-2 font-mono text-xs"
+                        className="flex items-center gap-3 rounded border border-fd-border bg-fd-background/80 px-3 py-2 font-mono text-xs"
                       >
                         <span
-                          className="bg-fd-primary h-3 w-1 shrink-0"
+                          className="h-3 w-1 shrink-0 bg-fd-primary"
                           style={{ opacity: 1 - index * 0.25 }}
                         />
                         {detail}
@@ -111,10 +111,10 @@ export function LandingResources() {
                   </h3>
                   <ArrowUpRight
                     aria-hidden="true"
-                    className="text-fd-muted-foreground size-4 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none"
+                    className="size-4 shrink-0 text-fd-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none"
                   />
                 </div>
-                <p className="text-fd-muted-foreground mt-3 text-sm leading-6">
+                <p className="mt-3 text-sm leading-6 text-fd-muted-foreground">
                   {description}
                 </p>
               </div>

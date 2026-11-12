@@ -1,3 +1,16 @@
+node_modules
+.DS_Store
+*.local
+.env*
+!.env.example
+
+# next.js / fumadocs
 .next/
 .source/
 next-env.d.ts
+
+# typescript
+*.tsbuildinfo
+
+# tests
+coverage/

@@ -25,20 +25,20 @@ export function SiteFooter() {
   return (
     <footer className="bg-fd-background">
       <div className="mx-auto w-full max-w-6xl px-6">
-        <hr className="border-fd-border m-0 border-0 border-t" />
+        <hr className="m-0 border-0 border-t border-fd-border" />
         <div className="grid grid-cols-2 gap-x-5 gap-y-6 pt-8 pb-6 sm:pt-10 md:grid-cols-[minmax(0,1.2fr)_1fr_1fr] md:gap-x-10 md:pb-8">
           <div className="col-span-2 md:col-span-1">
             <Link
               href="/"
-              className="focus-visible:outline-fd-ring inline-flex items-center gap-2.5 rounded-sm text-xl font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4"
+              className="inline-flex items-center gap-2.5 rounded-sm text-xl font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-ring"
             >
               <LineaMark />
               Linea
-              <span className="text-fd-muted-foreground font-normal">
+              <span className="font-normal text-fd-muted-foreground">
                 / Docs
               </span>
             </Link>
-            <p className="text-fd-muted-foreground mt-3 max-w-xs text-sm leading-6">
+            <p className="mt-3 max-w-xs text-sm leading-6 text-fd-muted-foreground">
               The runtime that remembers.
             </p>
           </div>
@@ -50,7 +50,7 @@ export function SiteFooter() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-fd-muted-foreground hover:text-fd-foreground focus-visible:outline-fd-ring inline-flex min-h-9 items-center rounded-sm py-1 text-sm leading-5 transition-colors hover:underline hover:underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4"
+                      className="inline-flex min-h-9 items-center rounded-sm py-1 text-sm leading-5 text-fd-muted-foreground transition-colors hover:text-fd-foreground hover:underline hover:underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fd-ring"
                     >
                       {link.title}
                     </Link>
@@ -60,7 +60,7 @@ export function SiteFooter() {
             </nav>
           ))}
         </div>
-        <div className="text-fd-muted-foreground py-3 text-center text-xs">
+        <div className="py-3 text-center text-xs text-fd-muted-foreground">
           <p>© {new Date().getFullYear()} Linea. Built in the open.</p>
         </div>
       </div>

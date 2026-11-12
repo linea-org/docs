@@ -72,7 +72,7 @@ function SourceLinks({ sources }: { sources: DocsSearchResult[] }) {
         <Link
           key={source.url}
           href={source.url}
-          className="text-fd-muted-foreground hover:text-fd-foreground text-xs"
+          className="text-xs text-fd-muted-foreground hover:text-fd-foreground"
         >
           [{index + 1}] {source.title}
         </Link>
@@ -146,7 +146,7 @@ export function DocsAssistant({ trigger }: { trigger: "header" | "floating" }) {
   return (
     <Dialog.Root modal="trap-focus">
       <Dialog.Trigger
-        className={`border-fd-border bg-fd-card hover:bg-fd-accent focus-visible:ring-fd-ring flex cursor-pointer items-center justify-center rounded-md border text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:outline-none ${trigger === "header" ? "h-9 gap-2 px-3" : "size-10"}`}
+        className={`flex cursor-pointer items-center justify-center rounded-md border border-fd-border bg-fd-card text-sm font-medium whitespace-nowrap transition-colors hover:bg-fd-accent focus-visible:ring-2 focus-visible:ring-fd-ring focus-visible:outline-none ${trigger === "header" ? "h-9 gap-2 px-3" : "size-10"}`}
         data-docs-ask-fab={trigger === "floating" ? "" : undefined}
       >
         <MessageCircle className="size-4" />
@@ -156,14 +156,14 @@ export function DocsAssistant({ trigger }: { trigger: "header" | "floating" }) {
         <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/20 backdrop-blur-xs transition-opacity data-ending-style:opacity-0 data-starting-style:opacity-0" />
         <Dialog.Popup
           data-docs-chat=""
-          className="border-fd-border bg-fd-popover text-fd-popover-foreground fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l shadow-2xl transition duration-200 data-ending-style:translate-x-12 data-ending-style:opacity-0 data-starting-style:translate-x-12 data-starting-style:opacity-0"
+          className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col border-l border-fd-border bg-fd-popover text-fd-popover-foreground shadow-2xl transition duration-200 data-ending-style:translate-x-12 data-ending-style:opacity-0 data-starting-style:translate-x-12 data-starting-style:opacity-0"
         >
-          <header className="border-fd-border flex h-12 items-center gap-3 border-b px-4">
+          <header className="flex h-12 items-center gap-3 border-b border-fd-border px-4">
             <div className="flex min-w-0 flex-1 items-baseline gap-2">
-              <Dialog.Title className="font-display shrink-0 text-sm font-semibold tracking-tight">
+              <Dialog.Title className="shrink-0 font-display text-sm font-semibold tracking-tight">
                 Ask Linea
               </Dialog.Title>
-              <Dialog.Description className="text-fd-muted-foreground truncate text-xs">
+              <Dialog.Description className="truncate text-xs text-fd-muted-foreground">
                 {pageTitle}
               </Dialog.Description>
             </div>
@@ -172,13 +172,13 @@ export function DocsAssistant({ trigger }: { trigger: "header" | "floating" }) {
                 <button
                   type="button"
                   onClick={resetChat}
-                  className="hover:bg-fd-accent focus-visible:ring-fd-ring cursor-pointer rounded-md p-2 focus-visible:ring-2 focus-visible:outline-none"
+                  className="cursor-pointer rounded-md p-2 hover:bg-fd-accent focus-visible:ring-2 focus-visible:ring-fd-ring focus-visible:outline-none"
                 >
                   <RotateCcw className="size-4" />
                   <span className="sr-only">Start a new chat</span>
                 </button>
               )}
-              <Dialog.Close className="hover:bg-fd-accent focus-visible:ring-fd-ring cursor-pointer rounded-md p-2 focus-visible:ring-2 focus-visible:outline-none">
+              <Dialog.Close className="cursor-pointer rounded-md p-2 hover:bg-fd-accent focus-visible:ring-2 focus-visible:ring-fd-ring focus-visible:outline-none">
                 <X className="size-4" />
                 <span className="sr-only">Close chat</span>
               </Dialog.Close>
@@ -191,7 +191,7 @@ export function DocsAssistant({ trigger }: { trigger: "header" | "floating" }) {
           >
             {messages.length === 0 && !isLoading && !error && (
               <div>
-                <p className="text-fd-muted-foreground text-sm">
+                <p className="text-sm text-fd-muted-foreground">
                   Ask a follow-up after the first answer. The thread stays on
                   this page.
                 </p>
@@ -201,7 +201,7 @@ export function DocsAssistant({ trigger }: { trigger: "header" | "floating" }) {
                       key={suggestion}
                       type="button"
                       onClick={() => void askDocs(suggestion)}
-                      className="border-fd-border hover:bg-fd-accent cursor-pointer rounded-md border px-3 py-2.5 text-left text-sm transition-colors"
+                      className="cursor-pointer rounded-md border border-fd-border px-3 py-2.5 text-left text-sm transition-colors hover:bg-fd-accent"
                     >
                       {suggestion}
                     </button>
@@ -216,7 +216,7 @@ export function DocsAssistant({ trigger }: { trigger: "header" | "floating" }) {
                   return (
                     <p
                       key={message.id}
-                      className="bg-fd-secondary text-fd-secondary-foreground ms-8 rounded-md px-3 py-2 text-sm leading-6"
+                      className="ms-8 rounded-md bg-fd-secondary px-3 py-2 text-sm leading-6 text-fd-secondary-foreground"
                     >
                       {text}
                     </p>
@@ -233,7 +233,7 @@ export function DocsAssistant({ trigger }: { trigger: "header" | "floating" }) {
                 )
               })}
               {isLoading && (
-                <div className="text-fd-muted-foreground flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-sm text-fd-muted-foreground">
                   <LoaderCircle className="size-4 animate-spin" />
                   {status === "submitted"
                     ? "Searching the docs..."
@@ -241,7 +241,7 @@ export function DocsAssistant({ trigger }: { trigger: "header" | "floating" }) {
                 </div>
               )}
               {error && (
-                <p className="text-fd-muted-foreground text-sm">
+                <p className="text-sm text-fd-muted-foreground">
                   {error.message ||
                     "The docs assistant could not answer right now."}
                 </p>
@@ -250,12 +250,12 @@ export function DocsAssistant({ trigger }: { trigger: "header" | "floating" }) {
           </div>
           <form
             onSubmit={handleSubmit}
-            className="border-fd-border border-t px-3 py-2.5"
+            className="border-t border-fd-border px-3 py-2.5"
           >
             <label htmlFor={questionId} className="sr-only">
               Message
             </label>
-            <div className="border-fd-border bg-fd-background focus-within:ring-fd-ring flex items-end gap-1.5 rounded-md border p-1.5 focus-within:ring-2">
+            <div className="flex items-end gap-1.5 rounded-md border border-fd-border bg-fd-background p-1.5 focus-within:ring-2 focus-within:ring-fd-ring">
               <textarea
                 id={questionId}
                 value={draft}
@@ -269,7 +269,7 @@ export function DocsAssistant({ trigger }: { trigger: "header" | "floating" }) {
               <button
                 type="submit"
                 disabled={!draft.trim() || isLoading}
-                className="bg-fd-primary text-fd-primary-foreground disabled:bg-fd-muted disabled:text-fd-muted-foreground flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md disabled:cursor-not-allowed"
+                className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md bg-fd-primary text-fd-primary-foreground disabled:cursor-not-allowed disabled:bg-fd-muted disabled:text-fd-muted-foreground"
               >
                 {isLoading ? (
                   <LoaderCircle className="size-4 animate-spin" />

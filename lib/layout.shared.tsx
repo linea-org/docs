@@ -8,7 +8,7 @@ const githubUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}`
 function navTitle(separated: boolean) {
   return (
     <span
-      className={`flex items-center gap-2 font-semibold ${separated ? "sm:border-fd-border sm:border-e sm:pe-6" : ""}`}
+      className={`flex items-center gap-2 font-semibold ${separated ? "sm:border-e sm:border-fd-border sm:pe-6" : ""}`}
     >
       <LineaMark />
       Linea Docs

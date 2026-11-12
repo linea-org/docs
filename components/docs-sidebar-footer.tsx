@@ -40,12 +40,12 @@ export function DocsSidebarFooter() {
     }
   }, [])
   return (
-    <div className="border-fd-border flex w-full items-center gap-2 border-t px-3 py-2.5">
+    <div className="flex w-full items-center gap-2 border-t border-fd-border px-3 py-2.5">
       <a
         href={`https://github.com/${gitConfig.user}/${gitConfig.repo}`}
         target="_blank"
         rel="noreferrer"
-        className="hover:bg-fd-accent text-fd-muted-foreground hover:text-fd-foreground flex min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 font-mono text-xs"
+        className="flex min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 font-mono text-xs text-fd-muted-foreground hover:bg-fd-accent hover:text-fd-foreground"
       >
         <svg
           viewBox="0 0 24 24"
