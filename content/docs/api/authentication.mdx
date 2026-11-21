@@ -22,12 +22,17 @@ End-User Session is a short-lived capability, not a Linea account session.
 
 ## End-user authorization
 
+The Environment key plays no part in this flow and must never be used for it.
+The end user's own browser or app runs it, so no Operator backend can mint or
+see the session. Running it from a server defeats that boundary.
+
 <Steps>
 
 ### Begin authorization
 
-The Application backend starts an authorization request for an external subject using
-its server-side Environment Key.
+The client calls `POST /v1/user-sessions/authorization` with the `environmentId`,
+a `redirectUri`, and a PKCE `codeChallenge`. It then redirects the user to the
+returned `authorizationUrl` at the identity provider.
 
 ### Verify identity
 
@@ -36,14 +41,22 @@ canonical subject within the workspace.
 
 ### Exchange the authorization result
 
-The client exchanges the short-lived result for an opaque End-User Session.
+The identity provider redirects back with a `code` and `state`. The client calls
+`POST /v1/user-sessions/exchange` with them and its PKCE `codeVerifier`, and
+receives a short-lived `exchangeToken`.
 
-### Prove possession on each request
+### Create the session and prove possession
 
-DPoP binds requests to the client key, method, and target URL so copying the
-session value alone is insufficient.
+The client calls `POST /v1/user-sessions` with the `exchangeToken` and a DPoP
+proof, and receives an opaque End-User Session. DPoP binds each later request to the client key,
+method, and target URL, so copying the session value alone is insufficient.
 
 </Steps>
+
+A session expires 15 minutes after it is created. There is no refresh: run the
+authorization again. Signing out at the identity provider stops new exchanges,
+but a session already issued stays valid until it expires or is revoked in
+Linea.
 
 See [trust boundaries](../security/trust-boundaries.mdx) for the full identity
 and credential map.

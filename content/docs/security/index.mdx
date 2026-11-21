@@ -12,15 +12,15 @@ and independently scoped capabilities, not one all-powerful token.
 
 1. Every tenant-owned read and write is scoped to a workspace.
 2. Environment and Workspace Keys have different authority and are not substitutes.
-3. End-User Sessions are short-lived, subject-bound, audience-bound capabilities.
-4. Public browser requests prove possession with DPoP and enforce trusted origins.
+3. End-User Sessions are short-lived capabilities bound to one subject and Environment.
+4. Public browser requests prove possession with DPoP. Requests that carry an `Origin`
+   header must come from a trusted origin, and redirect origins are always checked.
 5. Approval ownership follows the approver identity, not an ephemeral browser session.
 6. A Decision is immutable and separate from the Approval Request it answers.
 7. Provider and connector secrets remain on trusted server boundaries.
 
-The planned Connections milestone adds another invariant: an external side
-effect requires consent for the exact Action Intent or a covering policy. That
-connector enforcement is not part of the current release.
+A further invariant covers external side effects: they require consent for the
+exact Action Intent or a covering policy, and the connector gateway enforces it.
 
 ```mermaid
 flowchart TB
@@ -37,9 +37,9 @@ flowchart TB
   Environment -->|provisions| Subject
   Subject -->|authorizes| Session
   Session -->|scoped interaction| Execution
-  Execution -.->|planned Action Intent| Connector
-  Session -.->|planned Action Consent| Connector
-  Connector -.->|planned authorized side effect| Service
+  Execution -->|Action Intent| Connector
+  Session -->|Action Consent| Connector
+  Connector -->|authorized side effect| Service
 ```
 
 ## Reporting vulnerabilities
