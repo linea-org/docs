@@ -38,7 +38,7 @@ imports.
 3. **Delivery and execution** move durable work to purpose-built processes:
    BullMQ, the execution worker, and the background worker.
 4. **Runtime capabilities** resolve nodes and call external systems: the node
-   registry and AI providers. Connector execution is a planned boundary.
+   registry, AI providers, and the connector gateway.
 
 ## Architectural boundaries
 
@@ -80,9 +80,9 @@ first-party web and mobile apps authenticate workspace members. Credentials
 must not cross those planes. See [trust boundaries](../security/trust-boundaries.mdx)
 for the full model.
 
-The Connector Gateway and sandbox-facing Run Gateway are separate planned
-boundaries; their directories are not evidence that provider-credential
-execution or isolated sandbox traffic is already available.
+The Connector Gateway executes provider calls with stored credentials. The
+sandbox-facing Run Gateway is a separate planned boundary; isolated sandbox
+traffic is not yet available.
 
 ## Design principles
 

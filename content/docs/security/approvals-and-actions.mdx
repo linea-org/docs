@@ -4,9 +4,9 @@ description: How Linea pauses work, records human decisions, and authorizes side
 icon: BadgeCheck
 ---
 
-An Approval Request pauses an execution for a human decision. The planned
-Connections milestone adds Action Consent to authorize a specific external
-side effect. Action Consent is not enforced by the current release.
+An Approval Request pauses an execution for a human decision. Action Consent
+authorizes one specific external side effect, and the connector gateway
+enforces it before the effect runs.
 
 ```mermaid
 sequenceDiagram
@@ -19,7 +19,7 @@ sequenceDiagram
   Linea-->>User: approval_request.created
   User->>Linea: Submit immutable Decision
   Linea-->>Workflow: Resume or reject
-  Note over Workflow,External: Planned Connections and Action Consent flow
+  Note over Workflow,External: Action Consent flow
   Workflow-->>Gateway: Action Intent
   User-->>Gateway: Consent for intent digest
   Gateway-->>External: Execute authorized side effect
@@ -36,11 +36,14 @@ sequenceDiagram
 
 ## Action consent
 
-Action Consent is a planned control, not a capability in the current release.
-In that design, an Action Intent describes the target, operation, and relevant
-parameters before the side effect occurs. Consent covers the digest of that
-exact intent or an explicit policy broad enough to include it. Once implemented,
-the connector gateway will check consent at the final side-effect boundary.
+An Action Intent describes the target, operation, and relevant parameters before
+the side effect occurs, and waits in `awaiting_consent`. Consent covers the
+digest of that exact intent or an explicit policy broad enough to include it.
+The connector gateway claims the intent and checks consent, the Connection, and
+the requester and reviewer authority at the final side-effect boundary, and
+fails closed if any of them was revoked.
 
-This boundary is intended to prevent a compromised or buggy workflow executor
-from turning approval for one action into authority for a different action.
+This prevents a compromised or buggy workflow executor from turning approval for
+one action into authority for a different action. After the claim, an intent
+reports `succeeded`, `failed`, `stale`, or `outcome_unknown`; it never claims to
+have been cancelled once it started.
