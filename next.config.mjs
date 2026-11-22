@@ -18,6 +18,16 @@ const config = {
         destination: "/docs/architecture",
         permanent: true,
       },
+      {
+        source: "/docs/reference/api-keys",
+        destination: "/docs/api/authentication",
+        permanent: true,
+      },
+      {
+        source: "/docs/reference/:path*",
+        destination: "/docs/api",
+        permanent: true,
+      },
     ]
   },
 }
