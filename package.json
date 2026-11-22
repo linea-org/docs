@@ -20,6 +20,7 @@
     "@ai-sdk/react": "^4.0.110",
     "@ai-sdk/xai": "^5.0.4",
     "@base-ui/react": "^1.6.0",
+    "@next/third-parties": "16.4.6",
     "@upstash/vector": "^1.2.3",
     "ai": "^7.0.107",
     "fumadocs-core": "16.15.11",

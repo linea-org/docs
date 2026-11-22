@@ -1,5 +1,6 @@
 import "./global.css"
 import { DocsSearchDialog } from "@/components/docs-search-dialog"
+import { SiteAnalytics } from "@/components/site-analytics"
 import { siteUrl } from "@/lib/shared"
 import { RootProvider } from "fumadocs-ui/provider/next"
 import type { Metadata } from "next"
@@ -28,6 +29,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
         <RootProvider search={{ SearchDialog: DocsSearchDialog }}>
           {children}
         </RootProvider>
+        <SiteAnalytics />
       </body>
     </html>
   )
