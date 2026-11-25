@@ -1,0 +1,92 @@
+---
+title: Call the API
+description: Pick a credential, call a registered /v1 operation, and read the error envelope.
+icon: CodeXml
+---
+
+Every registered operation is under `/v1`. The compatibility contract is the operation registry in `@linealabs/protocol`. Full schemas are in the [route reference](https://github.com/linea-org/linea/blob/d8ce4e5ac7d53de54e01b511e48d3b7dda401eca/docs/route-reference.md).
+
+## Pick a client
+
+| Caller                                                | Client                                                    | Credential                    |
+| ----------------------------------------------------- | --------------------------------------------------------- | ----------------------------- |
+| Your backend, for one Environment                     | `LineaEnvironmentClient` from `@linealabs/sdk/server`     | Environment key `lin_env_...` |
+| Your backend, for workspace resources the SDK exposes | `Linea` from `@linealabs/sdk`                             | Workspace key `lin_...`       |
+| Browser, edge, or React Native                        | `LineaUserClient` from `@linealabs/sdk/user`              | End-User Session              |
+| Workspace admin Connection setup                      | `LineaConnectionAdminClient` from `@linealabs/sdk/server` | Session cookie                |
+
+Pass `baseUrl` to use an origin other than `https://api.getlinea.app`. The origin must be `https`, except `http` for `localhost`, `127.0.0.1`, or `[::1]`. Do not put a workspace key or an Environment key in code that ships to a browser.
+
+## Start an Execution
+
+This is the registered environment operation. It returns HTTP `202` and a public Execution.
+
+```ts
+import { LineaEnvironmentClient, environmentKey } from "@linealabs/sdk/server"
+
+const client = new LineaEnvironmentClient({
+  environmentId: process.env.LINEA_ENVIRONMENT_ID!,
+  environmentKey: environmentKey(process.env.LINEA_ENVIRONMENT_KEY!),
+})
+
+const execution = await client.startExecution(
+  {
+    agentId: process.env.LINEA_AGENT_ID!,
+    externalSubjectId: subjectId,
+    input: { repository: "acme/demo" },
+  },
+  { idempotencyKey: crypto.randomUUID() }
+)
+```
+
+The client sends `Authorization: Bearer <environment key>` and `Idempotency-Key`. If you omit `idempotencyKey`, the client generates one. The same key with a different body returns `idempotency_conflict`.
+
+A Workflow start uses `workflowId` and may include `conversationId`. An Agent start uses `agentId` and does not take `conversationId`.
+
+`input` is a JSON object. The protocol rejects input larger than 64 KiB, deeper than 16 levels, with more than 2048 nodes, or with a collection larger than 256 entries.
+
+## Read it back
+
+```ts
+const latest = await client.getExecution(execution.id)
+```
+
+`status` is `queued`, `running`, `paused`, `succeeded`, `failed`, or `cancelled`. `output` and `error` are null until the run finishes. `error` on this resource is `{ code, message }`.
+
+Cancel with `client.cancelExecution(execution.id)` when the key has `executions:cancel`. A run that cannot be cancelled returns `execution_not_cancellable`.
+
+## End-User session
+
+The browser client runs authorization. It creates the PKCE verifier, checks `state`, creates a non-extractable proof key, and keeps the session opaque.
+
+```ts
+import { LineaUserClient } from "@linealabs/sdk/user"
+
+const client = new LineaUserClient({ environmentId })
+const authorization = await client.startAuthorization({
+  redirectUri: `${location.origin}/oidc/callback`,
+})
+location.assign(authorization.authorizationUrl)
+```
+
+After the redirect:
+
+```ts
+const callback = new URL(location.href)
+await client.completeAuthorization({
+  code: callback.searchParams.get("code")!,
+  state: callback.searchParams.get("state")!,
+})
+```
+
+Later requests send `Authorization: DPoP <access token>` and a `DPoP` proof. `session()` returns `environmentId`, `externalSubjectId`, and `expiresAt`. It does not return the token. There is no refresh method. Call `startAuthorization` again when the session is missing, or `revoke()` to sign out.
+
+## Errors
+
+Registered operations return `{ "error": { "code", "message" } }`. `code` is one of the [stable error codes](/docs/reference/errors). `LineaEnvironmentClient` throws `LineaApiError` for an error status, `LineaNetworkError` when the request does not get a response, and `LineaProtocolError` when the response does not match the schema.
+
+The workspace `Linea` client is different. It throws `LineaApiError` or `LineaNetworkError`, and it does not retry. `ServerTransport`, used by the environment, user-admin, and regression clients, retries `GET` and idempotent calls on `429`, `502`, `503`, and `504`, up to three attempts.
+
+## Pagination
+
+Registered list operations take `limit` (1 to 100, default 20) and `cursor`. The body is `{ data, nextCursor }`. Pass `nextCursor` back as `cursor`. Workspace execution listing uses a different page shape. See the [SDK reference](/docs/reference/sdk).

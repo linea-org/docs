@@ -6,17 +6,17 @@ const linkGroups = [
     title: "Documentation",
     links: [
       { title: "Getting started", href: "/docs/getting-started" },
-      { title: "Architecture", href: "/docs/architecture" },
-      { title: "API reference", href: "/docs/api" },
-      { title: "Security", href: "/docs/security" },
+      { title: "How-to guides", href: "/docs/guides" },
+      { title: "Reference", href: "/docs/reference" },
+      { title: "Explanation", href: "/docs/explanation" },
     ],
   },
   {
     title: "Build with us",
     links: [
-      { title: "Contributing", href: "/docs/contributing" },
-      { title: "Repository map", href: "/docs/architecture/repository-map" },
-      { title: "Architecture decisions", href: "/docs/decisions" },
+      { title: "Glossary", href: "/docs/reference/glossary" },
+      { title: "Public API", href: "/docs/reference/api" },
+      { title: "Contributing", href: "/docs/guides/contributing" },
     ],
   },
 ]
@@ -39,7 +39,8 @@ export function SiteFooter() {
               </span>
             </Link>
             <p className="mt-3 max-w-xs text-sm leading-6 text-fd-muted-foreground">
-              The runtime that remembers.
+              Linea is a runtime and control plane for production agents. Its
+              SDKs and protocol are open source under Apache 2.0.
             </p>
           </div>
           {linkGroups.map((group) => (

@@ -1,0 +1,48 @@
+---
+title: Runtime and control plane
+description: How registered operations split configuration from running an Agent or Workflow.
+icon: Blocks
+---
+
+The protocol labels every registered operation with a plane: `control` or `end_user`.
+
+The control plane is the set of operations a workspace session, a workspace key, or an Environment key calls. That includes shared Connections, regression cases, provisioning an External Subject, and starting an Execution for an Environment.
+
+The end-user plane is the set of operations an End-User Session calls. That includes Conversations, messages, Workflow starts, Approval Decisions, personal Connections, and the event stream.
+
+The runtime is the part that accepts a start and moves the Execution through its statuses. From the public API, the runtime is the Execution resource. You start it, then read it. The open repository does not include the process that performs the graph.
+
+```mermaid
+flowchart LR
+  subgraph controlPlane [Control plane]
+    Admin[Workspace session]
+    EnvKey[Environment key]
+  end
+  subgraph endUserPlane [End-user plane]
+    Session[End-User Session]
+  end
+  API[Public /v1 API]
+  Exec[Execution]
+  Admin --> API
+  EnvKey --> API
+  Session --> API
+  API --> Exec
+```
+
+An Environment key starts either a Workflow or an Agent. An End-User Session starts a Workflow. Authoring the Agent, publishing a version, and binding that version to an Environment happen in the hosted workspace.
+
+```mermaid
+sequenceDiagram
+  participant App as Your backend
+  participant API as Public API
+  App->>API: POST /v1/environments/{environmentId}/executions
+  API-->>App: 202 Accepted and Execution
+  loop Until succeeded, failed, or cancelled
+    App->>API: GET /v1/executions/{executionId}
+    API-->>App: status, output, error
+  end
+```
+
+A `202` means the Execution was accepted. It does not mean the graph has finished. `paused` is a real status. Polling helpers keep waiting while the run is paused.
+
+The same protocol package defines the schemas the SDK parses. A response that does not match the schema raises `LineaProtocolError` on the protocol clients.

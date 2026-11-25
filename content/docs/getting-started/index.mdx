@@ -1,0 +1,131 @@
+---
+title: Run one Agent
+description: Deploy an Agent on the hosted platform, then start one Execution with the open example.
+icon: Rocket
+---
+
+This tutorial ends with one Execution of a deployed Agent. You will use the [company app example](https://github.com/linea-org/linea/tree/d8ce4e5ac7d53de54e01b511e48d3b7dda401eca/examples/company-app) in `linea-org/linea`. Its server provisions an External Subject and starts the Agent with an Environment key.
+
+<Callout type="warn" title="The SDKs are not released yet">
+  They are not on npm, the API they call is not public, and they can change
+  without notice. The example is a demo: it uses an access code, in-memory
+  sessions, and plain HTTP on localhost.
+</Callout>
+
+## What you need
+
+| Requirement      | Detail                                                                                                            |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Hosted workspace | [platform.getlinea.app](https://platform.getlinea.app). Authoring and deployment are part of the hosted platform. |
+| Node.js          | `24.22.1`, from the repository `.nvmrc`                                                                           |
+| pnpm             | `10.33.4`                                                                                                         |
+| Git              | To clone [linea-org/linea](https://github.com/linea-org/linea)                                                    |
+
+The API server is not in the public repository. The example calls `LINEA_API_URL`. When that variable is unset, the example uses `http://localhost:3000`. The SDK's own default, when you omit `baseUrl`, is `https://api.getlinea.app`. Set `LINEA_API_URL` to the API you can reach.
+
+## Prepare the Agent
+
+These steps happen in the hosted workspace. The example README is the source for this setup.
+
+<Steps>
+
+### Publish and deploy
+
+Publish an Agent whose Contract takes `{ "repository": string }` and deploy it to an Environment (Agent, then Deployment).
+
+### Add a GitHub Connection
+
+Add a GitHub Connection to that Environment. Assign a requester grant and a separate reviewer. Use a GitHub App installation limited to the repositories you will list in `ALLOWED_REPOSITORIES`.
+
+### Create an Environment key
+
+Create an Environment key (Environment, then Keys) with only `subjects:provision`, `executions:start`, and `executions:read`.
+
+### Copy the identifiers
+
+Copy the Environment ID, the Agent ID, and the workspace slug from the hosted UI.
+
+### Allow the demo origin
+
+To review on the page, edit the Environment trust settings. Add `http://localhost:4000` to allowed browser origins and allowed redirect origins, configure the identity provider, and register `http://localhost:4000/` as a redirect URI at the identity provider.
+
+</Steps>
+
+## Run the example
+
+<Steps>
+
+### Clone and install
+
+```bash
+git clone https://github.com/linea-org/linea.git
+cd linea
+pnpm install
+```
+
+### Export the configuration
+
+```bash
+export LINEA_ENVIRONMENT_ID=...
+export LINEA_ENVIRONMENT_KEY=lin_env_...
+export LINEA_AGENT_ID=...
+export LINEA_WORKSPACE_SLUG=...
+export LINEA_API_URL=https://api.getlinea.app
+export DEMO_END_USER_SUBJECT=demo-user
+export DEMO_ACCESS_CODE="$(node -e 'console.log(crypto.randomBytes(18).toString("base64url"))')"
+echo "$DEMO_ACCESS_CODE"
+export ALLOWED_REPOSITORIES=acme/demo
+```
+
+`LINEA_ENVIRONMENT_KEY` stays on the server. `DEMO_ACCESS_CODE` must be at least 16 characters. `ALLOWED_REPOSITORIES` is a comma-separated list of `owner/name` values. Replace `acme/demo` with a repository the GitHub installation can access.
+
+### Start the example
+
+From the repository root:
+
+```bash
+pnpm --filter linea-company-app-example start
+```
+
+That builds the SDK packages, builds the page, and starts the server. Open `http://localhost:4000` (the host must match `PUBLIC_ORIGIN`, so use `localhost`, not `127.0.0.1`). Enter the access code.
+
+### Submit one task
+
+Enter a repository from `ALLOWED_REPOSITORIES` and submit it. The page follows the Execution and shows one of these headlines: "Your request is queued", "Working on your request", "Waiting for a review", "Done", "Cancelled", or "This request did not finish".
+
+That page is one Agent Execution. A paused run is waiting for a review. Sign in with the identity provider if you were assigned reviewer. A requester's access code does not approve an action.
+
+</Steps>
+
+## What the server calls
+
+The example server does three things with `LineaEnvironmentClient` from `@linealabs/sdk/server`:
+
+```ts
+import { LineaEnvironmentClient, environmentKey } from "@linealabs/sdk/server"
+
+const client = new LineaEnvironmentClient({
+  environmentId: process.env.LINEA_ENVIRONMENT_ID!,
+  environmentKey: environmentKey(process.env.LINEA_ENVIRONMENT_KEY!),
+  baseUrl: process.env.LINEA_API_URL,
+})
+
+const subject = await client.provisionSubject({
+  issuerSubject: process.env.DEMO_END_USER_SUBJECT!,
+  metadata: {},
+})
+
+const execution = await client.startExecution({
+  agentId: process.env.LINEA_AGENT_ID!,
+  externalSubjectId: subject.id,
+  input: { repository },
+})
+
+const latest = await client.getExecution(execution.id)
+```
+
+`startExecution` is `POST /v1/environments/{environmentId}/executions` and returns `202` with the Execution. `input` must match the Agent Contract. This example sends `{ repository }`.
+
+## Next
+
+Read [how to call the API](/docs/guides/call-the-api) for the other clients, or [Executions](/docs/explanation/executions) for what the statuses mean.

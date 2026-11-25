@@ -2,11 +2,13 @@
   "title": "Linea Docs",
   "pages": [
     "index",
+    "---Getting started---",
     "getting-started",
-    "architecture",
-    "api",
-    "security",
-    "decisions",
-    "contributing"
+    "---How-to guides---",
+    "guides",
+    "---Reference---",
+    "reference",
+    "---Explanation---",
+    "explanation"
   ]
 }

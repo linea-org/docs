@@ -1,0 +1,100 @@
+---
+title: Public API
+description: Registered /v1 operations from the protocol operation registry.
+icon: CodeXml
+---
+
+This page lists the 50 operations in `operationRegistry` at commit `d8ce4e5`. Shapes, rate limits, and idempotency notes are in the generated [route reference](https://github.com/linea-org/linea/blob/d8ce4e5ac7d53de54e01b511e48d3b7dda401eca/docs/route-reference.md). Do not treat a path as a compatibility contract unless it appears there.
+
+SDK methods for these operations are on the [SDK](/docs/reference/sdk) page. Paths that only the workspace `Linea` client calls, and that are missing here, are not registry operations.
+
+## Environment key
+
+| Operation                             | Method and path                                                       | Status | Scope                 |
+| ------------------------------------- | --------------------------------------------------------------------- | ------ | --------------------- |
+| `provisionEnvironmentSubject`         | `POST /v1/environments/{environmentId}/subjects`                      | 200    | `subjects:provision`  |
+| `createEnvironmentConversation`       | `POST /v1/environments/{environmentId}/conversations`                 | 201    | `conversations:write` |
+| `listEnvironmentConversations`        | `GET /v1/environments/{environmentId}/conversations`                  | 200    | `conversations:read`  |
+| `getEnvironmentConversation`          | `GET /v1/environments/{environmentId}/conversations/{conversationId}` | 200    | `conversations:read`  |
+| `startEnvironmentExecution`           | `POST /v1/environments/{environmentId}/executions`                    | 202    | `executions:start`    |
+| `getEnvironmentExecution`             | `GET /v1/executions/{executionId}`                                    | 200    | `executions:read`     |
+| `cancelEnvironmentExecution`          | `POST /v1/executions/{executionId}/cancel`                            | 200    | `executions:cancel`   |
+| `listEnvironmentConnectorAuditEvents` | `GET /v1/environments/{environmentId}/audit-events`                   | 200    | `audit:read`          |
+| `listWebhookDeliveries`               | `GET /v1/environments/{environmentId}/webhook-deliveries`             | 200    | `webhooks:read`       |
+
+`startEnvironmentExecution` body is one of:
+
+| Title in the schema | Required fields                                                        |
+| ------------------- | ---------------------------------------------------------------------- |
+| Start of a Workflow | `workflowId`, `externalSubjectId`, `input`. Optional `conversationId`. |
+| Start of an Agent   | `agentId`, `externalSubjectId`, `input`.                               |
+
+The success body is a public Execution. A Workflow run has `workflowId`. An Agent run has `workflowId: null` and `agentId`.
+
+`events:read` is declared on the Environment key scope enum. No registered operation requires it.
+
+## End-User session
+
+Authorization `start` and `exchange` use no credential. Creating the session sends a `DPoP` proof. Later calls use the session.
+
+| Operation                         | Method and path                                                     | Status |
+| --------------------------------- | ------------------------------------------------------------------- | ------ |
+| `startEndUserAuthorization`       | `POST /v1/user-sessions/authorization`                              | 201    |
+| `exchangeEndUserAuthorization`    | `POST /v1/user-sessions/exchange`                                   | 201    |
+| `createEndUserSession`            | `POST /v1/user-sessions`                                            | 201    |
+| `revokeEndUserSession`            | `DELETE /v1/user-sessions/current`                                  | 204    |
+| `createEndUserConversation`       | `POST /v1/user/conversations`                                       | 201    |
+| `listEndUserConversations`        | `GET /v1/user/conversations`                                        | 200    |
+| `getEndUserConversation`          | `GET /v1/user/conversations/{conversationId}`                       | 200    |
+| `createEndUserMessage`            | `POST /v1/user/conversations/{conversationId}/messages`             | 201    |
+| `listEndUserMessages`             | `GET /v1/user/conversations/{conversationId}/messages`              | 200    |
+| `startEndUserExecution`           | `POST /v1/user/executions`                                          | 202    |
+| `getEndUserExecution`             | `GET /v1/user/executions/{executionId}`                             | 200    |
+| `listEndUserApprovalRequests`     | `GET /v1/user/approval-requests`                                    | 200    |
+| `getEndUserApprovalRequest`       | `GET /v1/user/approval-requests/{approvalRequestId}`                | 200    |
+| `decideEndUserApprovalRequest`    | `POST /v1/user/approval-requests/{approvalRequestId}/decisions`     | 201    |
+| `listPendingActionIntents`        | `GET /v1/user/action-intents`                                       | 200    |
+| `streamEndUserEvents`             | `GET /v1/user/events`                                               | 200    |
+| `listEndUserConnectorAuditEvents` | `GET /v1/user/audit-events`                                         | 200    |
+| `startConnectionAuthorization`    | `POST /v1/user/connections/authorizations`                          | 201    |
+| `launchConnectionAuthorization`   | `POST /v1/user/connections/authorizations/{authorizationId}/launch` | 201    |
+| `getConnectionAuthorization`      | `GET /v1/user/connections/authorizations/{authorizationId}`         | 200    |
+| `listConnections`                 | `GET /v1/user/connections`                                          | 200    |
+| `getConnection`                   | `GET /v1/user/connections/{connectionId}`                           | 200    |
+| `startConnectionScopeUpgrade`     | `POST /v1/user/connections/{connectionId}/authorizations`           | 201    |
+| `listConnectionUses`              | `GET /v1/user/connections/{connectionId}/uses`                      | 200    |
+| `revokeConnection`                | `DELETE /v1/user/connections/{connectionId}`                        | 200    |
+
+`streamEndUserEvents` responds with `text/event-stream`. The query may include `conversationId` and up to eight `eventType` values. The resume header is `Last-Event-ID`.
+
+`startEndUserExecution` body is `workflowId`, optional `conversationId`, and `input`.
+
+## Workspace session
+
+These operations authenticate a workspace administrator session. The connection admin client sends that session as a `Cookie` header.
+
+| Operation                            | Method and path                                                                                             | Status |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------- | ------ |
+| `listEnvironmentConnections`         | `GET /v1/environments/{environmentId}/connections`                                                          | 200    |
+| `createGithubInstallationConnection` | `POST /v1/environments/{environmentId}/connections/github-installations`                                    | 201    |
+| `getConnectionAuthorities`           | `GET /v1/environments/{environmentId}/connections/{connectionId}/authorities`                               | 200    |
+| `grantConnectionAccess`              | `POST /v1/environments/{environmentId}/connections/{connectionId}/access-grants`                            | 201    |
+| `revokeConnectionAccess`             | `DELETE /v1/environments/{environmentId}/connections/{connectionId}/access-grants/{authorizationId}`        | 200    |
+| `assignConnectionReviewer`           | `POST /v1/environments/{environmentId}/connections/{connectionId}/reviewer-assignments`                     | 201    |
+| `revokeConnectionReviewer`           | `DELETE /v1/environments/{environmentId}/connections/{connectionId}/reviewer-assignments/{authorizationId}` | 200    |
+| `revokeSharedConnection`             | `DELETE /v1/environments/{environmentId}/connections/{connectionId}`                                        | 200    |
+| `createRegressionCaseFromStep`       | `POST /v1/workflows/{workflowId}/regression-cases/from-step`                                                | 201    |
+| `createRegressionCaseFromFlag`       | `POST /v1/workflows/{workflowId}/regression-cases/from-flag`                                                | 201    |
+| `archiveRegressionCase`              | `POST /v1/workflows/{workflowId}/regression-cases/{id}/archive`                                             | 201    |
+| `triggerRegressionRun`               | `POST /v1/workflows/{workflowId}/regression-runs`                                                           | 201    |
+
+## Workspace key
+
+| Operation                           | Method and path                                       | Status | Scope              |
+| ----------------------------------- | ----------------------------------------------------- | ------ | ------------------ |
+| `listWorkspaceConnectorAuditEvents` | `GET /v1/audit-events`                                | 200    | `audit:read`       |
+| `listRegressionCases`               | `GET /v1/workflows/{workflowId}/regression-cases`     | 200    | `regressions:read` |
+| `listRegressionRuns`                | `GET /v1/workflows/{workflowId}/regression-runs`      | 200    | `regressions:read` |
+| `getRegressionRun`                  | `GET /v1/workflows/{workflowId}/regression-runs/{id}` | 200    | `regressions:read` |
+
+The workspace key scope enum also declares `workflows:read`, `workflows:write`, `workflows:publish`, `applications:read`, `executions:read`, `executions:start`, `signals:read`, `signals:write`, and `regressions:write`. No registered operation requires those scopes.

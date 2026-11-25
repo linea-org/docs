@@ -1,0 +1,11 @@
+{
+  "title": "How-to guides",
+  "pages": [
+    "index",
+    "add-a-connector",
+    "set-up-approvals",
+    "environments-and-versions",
+    "call-the-api",
+    "contributing"
+  ]
+}

@@ -1,0 +1,44 @@
+---
+title: Config
+description: SDK client options and the environment variables for this docs site.
+icon: Settings
+---
+
+## SDK clients
+
+| Option           | Clients                                                                            | Constraint                                                                                                                                          |
+| ---------------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `baseUrl`        | `Linea`, `LineaEnvironmentClient`, `LineaUserClient`, `LineaConnectionAdminClient` | Origin only, no `/v1` suffix. Default `https://api.getlinea.app`. `https` is required. `http` is allowed for `localhost`, `127.0.0.1`, and `[::1]`. |
+| `apiKey`         | `Linea`                                                                            | Workspace key. Required.                                                                                                                            |
+| `environmentKey` | `LineaEnvironmentClient`                                                           | Value returned by `environmentKey()`. Required.                                                                                                     |
+| `environmentId`  | `LineaEnvironmentClient`, `LineaUserClient`, `LineaConnectionAdminClient`          | Required. On registered environment and end-user operations this id is a UUID (`publicRuntimeIdSchema`).                                            |
+| `sessionCookie`  | `LineaConnectionAdminClient`                                                       | Workspace administrator cookie. Sent as `Cookie`.                                                                                                   |
+| `fetch`          | `LineaUserClient`                                                                  | Defaults to `globalThis.fetch`.                                                                                                                     |
+| `crypto`         | `LineaUserClient`                                                                  | Defaults to `globalThis.crypto`. Web Crypto is required.                                                                                            |
+| `storage`        | `LineaUserClient`                                                                  | Durable session store. Required for React Native.                                                                                                   |
+| `proofKeys`      | `LineaUserClient`                                                                  | Key store that returns an id and public JWK. Required for React Native.                                                                             |
+
+`WaitOptions` on `wait` and `waitForExecution`:
+
+| Option       | Default  |
+| ------------ | -------- |
+| `intervalMs` | `1000`   |
+| `timeoutMs`  | `300000` |
+
+The company app example reads `LINEA_API_URL` and passes it as `baseUrl`. Its own default is `http://localhost:3000`, which is separate from the SDK default.
+
+## Docs site
+
+These variables configure this documentation site. They are not Linea API credentials. Names and limits come from this repository.
+
+| Variable                                                                        | Role                                                                                                              |
+| ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`            | Provider keys for the docs assistant. The model id in `lib/ai-registry.ts` selects the key.                       |
+| `DOCS_AI_MODEL`                                                                 | Optional model id. It must be a key of that registry.                                                             |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`                            | Budget storage. The URL must be `https`. Missing storage fails the assistant in two seconds.                      |
+| `DOCS_AI_DAILY_REQUEST_LIMIT`                                                   | Integer from 1 to 100000. Default 1000.                                                                           |
+| `DOCS_ASSISTANT_TRUST_PROXY`                                                    | Set to `1` only behind a proxy that appends the client IP. Outside Vercel, other values ignore `X-Forwarded-For`. |
+| `UPSTASH_VECTOR_REST_URL`, `UPSTASH_VECTOR_REST_TOKEN`, `DOCS_VECTOR_NAMESPACE` | Hosted semantic search. `pnpm ingest` prints the namespace to deploy.                                             |
+| `NEXT_PUBLIC_GA_ID`                                                             | Google Analytics measurement id. Loaded only on getlinea.app hosts.                                               |
+
+Assistant request limits in this repo: body at most 48000 bytes, at most 11 messages, user text at most 500 characters, assistant text at most 6000 characters, `currentPath` at most 512 characters and only under `/docs`. Generation allows two model steps and 900 output tokens per step. Each client is limited to 10 questions in a minute and 50 in a UTC day. IPv6 clients share a `/64`.
