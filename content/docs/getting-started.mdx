@@ -1,55 +1,32 @@
 ---
 title: Getting started
-description: Install the monorepo, start the platform, and find your first change.
+description: Build the Linea SDKs, run the examples, and find your way around the docs.
 icon: Rocket
 ---
 
-## Prerequisites
+<Callout type="warn" title="The SDKs are not released yet">
+  They are not on npm, the API they call is not public, and they can change
+  without notice. Don't build on them yet.
+</Callout>
 
-- Node.js 20 or newer
-- pnpm 10
-- Docker
+## Build the SDKs
 
-## Start the platform
-
-<Steps>
-
-### Install dependencies
+The SDKs, the protocol, and their examples live in
+[linea-org/linea](https://github.com/linea-org/linea). You need Git, pnpm 10, and
+the Node.js version in its `.nvmrc`.
 
 ```bash
+git clone https://github.com/linea-org/linea.git
+cd linea
 pnpm install
+pnpm build
+pnpm test
 ```
 
-### Configure the environment
-
-Copy each app and package's `.env.example` to its own `.env`, then provide
-the required authentication and email credentials. Keep the encryption keys
-identical across the API and workers that use them.
-
-```bash
-for example in apps/*/.env.example packages/*/.env.example docker/.env.example; do
-  cp "$example" "${example%.example}"
-done
-```
-
-### Start PostgreSQL and Redis
-
-```bash
-pnpm db:up
-pnpm queue:up
-pnpm db:migrate
-```
-
-### Start all applications
-
-```bash
-pnpm dev
-```
-
-</Steps>
-
-The web application runs at `http://localhost:3001` and the API at
-`http://localhost:3000`.
+Each folder in [`examples`](https://github.com/linea-org/linea/tree/main/examples)
+shows one way to integrate. The
+[company app](https://github.com/linea-org/linea/tree/main/examples/company-app)
+explains which parts the company developer and the End User own.
 
 ## Run the docs site
 
@@ -127,19 +104,8 @@ The command writes to a new namespace and prints the
 ingestion fails. Without Upstash credentials, local development uses the
 built-in documentation search.
 
-## Verify a change
+## Next
 
-Run the same checks used by CI before opening a pull request:
-
-```bash
-pnpm lint
-pnpm typecheck
-pnpm format:check
-```
-
-For a first code change, use the [repository map](./architecture/repository-map.mdx)
-to find the owner, then follow the [contribution guide](./contributing.mdx)
-for tests, contracts, and pull-request expectations.
-
-See the [contribution guide](./contributing.mdx) for repository conventions and
-the documentation workflow.
+Read the [architecture overview](./architecture/index.mdx) to see how a run works,
+and the [API overview](./api/index.mdx) for the credential each caller uses. To
+change something, follow the [contribution guide](./contributing.mdx).

@@ -3,8 +3,8 @@ import Link from "next/link"
 
 const steps = [
   {
-    title: "Run Linea locally",
-    description: "Set up your environment and start the platform.",
+    title: "Get started",
+    description: "Build the SDKs and run the examples from source.",
     href: "/docs/getting-started",
   },
   {
@@ -14,7 +14,7 @@ const steps = [
   },
   {
     title: "Make your first change",
-    description: "Find your way around the code and contribute.",
+    description: "Change the SDKs, the protocol, or these docs.",
     href: "/docs/contributing",
   },
 ]

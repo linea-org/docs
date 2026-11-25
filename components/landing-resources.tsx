@@ -54,7 +54,7 @@ const resources = [
   {
     title: "Contributor guide",
     description:
-      "Set up your environment and make your first code or documentation change.",
+      "Make your first change to the SDKs, the protocol, or these docs.",
     href: "/docs/contributing",
     icon: GitPullRequest,
   },
