@@ -1,10 +1,8 @@
 /**
  * Model-to-provider key resolution for the docs assistant.
  *
- * Copied from `packages/ai/src/registry.ts` in `linea-org/linea` when the
- * docs site moved into its own repository. Keyed by exact model id and mapped
- * explicitly — never inferred from the string. Keep it in step with the
- * monorepo registry when adding a model to `modelCandidates`.
+ * Keyed by exact model id and mapped explicitly — never inferred from the
+ * string. Add the model here too when adding one to `modelCandidates`.
  */
 const keyNameByModel: Record<string, string> = {
   "claude-opus-5": "ANTHROPIC_API_KEY",

@@ -19,8 +19,9 @@ can share the prefix without becoming public API.
 
 The operation registry in `packages/protocol/src/operations` owns method,
 path, request schema, response schema, stable errors, and public visibility.
-The API, SDKs, and contract tests consume that registry. Run
-`pnpm check:contracts` to verify the generated
+The API, SDKs, and contract tests consume that registry. In
+[linea-org/linea](https://github.com/linea-org/linea), `pnpm check:contracts`
+verifies the generated
 [OpenAPI document](https://github.com/linea-org/linea/blob/main/docs/openapi.json)
 and [route reference](https://github.com/linea-org/linea/blob/main/docs/route-reference.md).
 

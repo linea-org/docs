@@ -1,53 +1,39 @@
 ---
 title: Repository map
-description: What each application and shared package owns in the Linea monorepo.
+description: What each Linea repository and open package owns.
 icon: FolderTree
 ---
 
-## Applications
+## Repositories
 
-| Application                                                                 | Role                                                                    | Runtime                    |
-| --------------------------------------------------------------------------- | ----------------------------------------------------------------------- | -------------------------- |
-| `apps/web`                                                                  | Workflow authoring, workspace administration, and operational UI        | TanStack Start             |
-| `apps/mobile`                                                               | Workspace-member monitoring, approvals, and push notifications          | Expo and React Native      |
-| `apps/platform-api`                                                         | Versioned REST API, realtime events, auth, and control-plane operations | NestJS                     |
-| `apps/execution-worker`                                                     | Queue consumer and workflow execution driver                            | NestJS application context |
-| `apps/background-worker`                                                    | Schedules, analysis, and asynchronous maintenance                       | NestJS application context |
-| `apps/run-gateway`                                                          | Planned isolated execution gateway                                      | Not implemented yet        |
-| [`linea-org/docs`](https://github.com/linea-org/docs) (separate repository) | Architecture, API, security, and contributor knowledge                  | Next.js and Fumadocs       |
+| Repository                                              | Holds                                                 |
+| ------------------------------------------------------- | ----------------------------------------------------- |
+| [`linea-org/linea`](https://github.com/linea-org/linea) | Protocol, SDKs, examples, and generated API reference |
+| [`linea-org/docs`](https://github.com/linea-org/docs)   | This documentation site                               |
 
-## Shared packages
+The platform (the web app, API, workers, and mobile app) is developed in private
+repositories.
 
-| Package             | Owns                                                                      |
-| ------------------- | ------------------------------------------------------------------------- |
-| `@linea/ai`         | Provider adapters, model metadata, and normalized AI calls                |
-| `@linea/auth`       | Better Auth configuration and shared authentication behavior              |
-| `@linea/config`     | Shared TypeScript, ESLint, and environment configuration                  |
-| `@linea/db`         | Drizzle schema, repositories, transactions, and migrations                |
-| `@linea/protocol`   | Public operations, schemas, events, enums, and stable errors              |
-| `@linea/queue`      | BullMQ queues, job payloads, delivery, and worker helpers                 |
-| `@linea/runtime`    | Workflow schema, node definitions, expression handling, and graph walking |
-| `@linea/sdk`        | Server and end-user client interfaces over the public protocol            |
-| `@linea/types`      | Small cross-package types that have no deeper owner                       |
-| `@linea/sdk-react`  | Headless React bindings for End-User applications                         |
-| `@linea/ui`         | Shared React design-system primitives                                     |
-| `@linea/connectors` | Connector gateway, operations, and Action Intent consent checks           |
+## Open packages
 
-<Callout title="Status matters">
-  Some directories are intentional placeholders for future boundaries. Check a
-  package&apos;s scripts and source before assuming that its planned
-  responsibility is implemented.
+| Package                | Owns                                                               |
+| ---------------------- | ------------------------------------------------------------------ |
+| `@linealabs/protocol`  | Public operations, schemas, events, and stable errors              |
+| `@linealabs/sdk`       | Server, browser, and native clients, and webhook verification      |
+| `@linealabs/sdk-react` | Headless React hooks for End-User apps, and the CopilotKit adapter |
+
+<Callout type="warn" title="Not released yet">
+  None of them is on npm, and they can change without notice.
 </Callout>
 
 ## Dependency rule
 
 ```mermaid
 flowchart TB
-  Apps[apps/* deployable processes] --> Packages[packages/* shared modules]
-  Packages --> External[External libraries and services]
-  Apps -. forbidden .-> OtherApps[another apps/* project]
+  React["@linealabs/sdk-react"] --> SDK["@linealabs/sdk"]
+  SDK --> Protocol["@linealabs/protocol"]
+  Platform["Linea platform (private)"] --> Protocol
 ```
 
-Keeping dependencies pointed toward shared modules allows each application to
-build and deploy independently while keeping a route, SDK method, schema, and
-documentation change in one repository and one pull request.
+The platform and both SDKs use the same protocol, so a request or response shape
+is defined once.

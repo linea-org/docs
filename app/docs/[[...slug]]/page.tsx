@@ -49,7 +49,7 @@ export default async function Page(props: DocsPageProps) {
             <MarkdownCopyButton markdownUrl={markdownUrl} />
             <ViewOptionsPopover
               markdownUrl={markdownUrl}
-              githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/apps/docs/content/docs/${page.path}`}
+              githubUrl={`https://github.com/${gitConfig.user}/docs/blob/${gitConfig.branch}/content/docs/${page.path}`}
             />
           </div>
           <DocsDescription className="mt-0 mb-0 md:col-span-2">

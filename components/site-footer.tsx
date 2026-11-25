@@ -61,7 +61,7 @@ export function SiteFooter() {
           ))}
         </div>
         <div className="py-3 text-center text-xs text-fd-muted-foreground">
-          <p>© {new Date().getFullYear()} Linea. Built in the open.</p>
+          <p>© {new Date().getFullYear()} Linea.</p>
         </div>
       </div>
     </footer>

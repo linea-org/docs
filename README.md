@@ -3,9 +3,7 @@
 The public documentation site for [Linea](https://github.com/linea-org/linea),
 built with Next.js and Fumadocs and deployed on Vercel.
 
-This repository was extracted from `apps/docs` in the `linea-org/linea`
-monorepo with its history preserved. It has no workspace dependencies and
-installs on its own.
+It has no workspace dependencies and installs on its own.
 
 ## Develop
 
@@ -36,13 +34,10 @@ Pages live in `content/docs` as MDX. Add new pages to the nearest `meta.json`
 so navigation order stays explicit. See the
 [contributing guide](content/docs/contributing.mdx) for conventions.
 
-The content links to files that live in the monorepo (the ADRs, the OpenAPI
-document, the route reference, `CONTRIBUTING.md`, `GLOSSARY.md`,
-`SECURITY.md`) by GitHub URL rather than by copying them, so nothing here needs
-to be regenerated from the monorepo on release. The one piece of shared logic
-is `lib/ai-registry.ts`, a copy of the model-to-API-key table from
-`packages/ai/src/registry.ts` in the monorepo; update it by hand when adding a
-model to the docs assistant's candidate list.
+The content links to the OpenAPI document, the route reference,
+`CONTRIBUTING.md`, and `SECURITY.md` in `linea-org/linea` by GitHub URL, so
+nothing here needs to be regenerated when they change. When you add a model to the
+docs assistant's candidate list, add it to `lib/ai-registry.ts` too.
 
 ## Search index
 

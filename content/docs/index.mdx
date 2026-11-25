@@ -1,12 +1,12 @@
 ---
 title: Linea documentation
-description: Architecture, APIs, security boundaries, and contribution guidance for the Linea platform.
+description: Architecture, APIs, and security boundaries of the Linea platform, and how to contribute to its SDKs.
 icon: BookOpen
 ---
 
 Linea is a platform for building and operating agentic systems that combine
 workflows, models, tools, and integrations. These docs
-explain how the system fits together and how to change it safely.
+explain how the system fits together and how to integrate with it.
 
 <Callout type="warn" title="Early-stage project">
   Linea is pre-1.0 and under active development. Treat current code and public
@@ -18,9 +18,9 @@ explain how the system fits together and how to change it safely.
 <DocsLinks
   items={[
     {
-      title: "Run Linea locally",
+      title: "Get started",
       href: "/docs/getting-started",
-      description: "Install dependencies and start the platform.",
+      description: "Build the SDKs and run the examples from source.",
     },
     {
       title: "Understand the architecture",
@@ -33,9 +33,9 @@ explain how the system fits together and how to change it safely.
       description: "Learn the protocol, versioning, and identity surfaces.",
     },
     {
-      title: "Contribute to Linea",
+      title: "Contribute",
       href: "/docs/contributing",
-      description: "Find the owning code, run checks, and open a focused PR.",
+      description: "Change the SDKs, the protocol, or these docs.",
     },
     {
       title: "Review the security model",
@@ -46,16 +46,11 @@ explain how the system fits together and how to change it safely.
   ]}
 />
 
-## Documentation contract
+## Sources of truth
 
-| Information                           | Source of truth                   | Documentation role               |
-| ------------------------------------- | --------------------------------- | -------------------------------- |
-| Public request and response shapes    | `packages/protocol`               | Explain concepts and usage       |
-| Runtime behavior and node definitions | `packages/runtime`                | Explain execution and invariants |
-| Persistent data                       | `packages/db`                     | Explain ownership and lifecycle  |
-| Hard-to-reverse decisions             | `docs/adr`                        | Preserve context and trade-offs  |
-| Contributor rules                     | `AGENTS.md` and `CONTRIBUTING.md` | Define how changes are made      |
-
-The documentation site is versioned in the same repository. A change to a
-contract or architectural boundary should update its documentation in the same
-pull request.
+| Information                        | Source of truth                                                                               |
+| ---------------------------------- | --------------------------------------------------------------------------------------------- |
+| Public request and response shapes | [`packages/protocol`](https://github.com/linea-org/linea/tree/main/packages/protocol)         |
+| Public HTTP operations             | [Route reference](https://github.com/linea-org/linea/blob/main/docs/route-reference.md)       |
+| SDK behavior                       | [`packages/sdk`](https://github.com/linea-org/linea/tree/main/packages/sdk) and its React SDK |
+| Contributor rules                  | [`CONTRIBUTING.md`](https://github.com/linea-org/linea/blob/main/CONTRIBUTING.md)             |
