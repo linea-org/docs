@@ -1,0 +1,46 @@
+---
+title: Set up approvals
+description: Assign a reviewer and submit an approve or reject Decision from an End-User session.
+icon: BadgeCheck
+---
+
+An Approval Request is a pause on an Execution. A Decision is the immutable approve or reject response. End-User sessions submit Decisions. Workspace keys and Environment keys do not have a Decision operation.
+
+Assigning who may review a shared Connection is a workspace administrator action. In the hosted workspace, the company app example assigns that reviewer on the Connection. The registered call is `assignReviewer` on `LineaConnectionAdminClient`. See [Add a connector](/docs/guides/add-a-connector).
+
+## Submit a Decision
+
+```ts
+import { LineaUserClient } from "@linealabs/sdk/user"
+
+const client = new LineaUserClient({
+  environmentId: process.env.LINEA_ENVIRONMENT_ID!,
+})
+
+const page = await client.listApprovalRequests({ status: "pending" })
+const request = page.data[0]
+if (request) {
+  await client.decide(request.id, {
+    decision: "approved",
+    comment: "Reviewed the proposed action",
+  })
+}
+```
+
+`decision` is `approved` or `rejected`. `comment` is optional and at most 2048 UTF-8 bytes. The operation is `POST /v1/user/approval-requests/{approvalRequestId}/decisions` and returns `201`.
+
+A second Decision on the same request fails with `approval_request_already_decided` or `decision_conflict`. Other stable codes include `approval_request_expired`, `approval_request_cancelled`, and `approval_request_wrong_subject`.
+
+`listApprovalRequests` defaults `status` to `pending`. Pass `conversationId` to limit the list to one Conversation.
+
+## React
+
+`@linealabs/sdk-react` exposes `useApprovalRequests`, `useDecision`, and an `ApprovalRequest` component. Mount them under `LineaUserProvider`.
+
+The CopilotKit adapter is `CopilotKitApprovalAction` from `@linealabs/sdk-react/copilotkit`. The CopilotKit tool call is `linea_approval_request` with an `approvalRequestId`. The adapter reads the request from `useApprovalRequests` and submits through `useDecision`. CopilotKit does not store the Decision.
+
+## Action Intents
+
+`listPendingActionIntents` returns intents waiting on the signed-in End User. Each item has `operation`, `display`, `connectionId`, `executionId`, and a nested `approvalRequest` id. Listing intents does not approve them. Approval is still `decide`.
+
+Webhook types for this flow are `approval_request.created`, `approval_request.decided`, `approval_request.cancelled`, `action_intent.executed`, and `action_intent.failed`. Verify deliveries with `verifyWebhook` from `@linealabs/sdk/webhooks`.

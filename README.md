@@ -32,12 +32,13 @@ pnpm build
 
 Pages live in `content/docs` as MDX. Add new pages to the nearest `meta.json`
 so navigation order stays explicit. See the
-[contributing guide](content/docs/contributing.mdx) for conventions.
+[contributing guide](content/docs/guides/contributing.mdx) for conventions.
 
-The content links to the OpenAPI document, the route reference,
-`CONTRIBUTING.md`, and `SECURITY.md` in `linea-org/linea` by GitHub URL, so
-nothing here needs to be regenerated when they change. When you add a model to the
-docs assistant's candidate list, add it to `lib/ai-registry.ts` too.
+Pages follow the Diátaxis sections in `content/docs`: a getting-started
+tutorial, how-to guides, reference, and explanation. The reference links to
+the OpenAPI document and route reference in `linea-org/linea` by GitHub URL.
+When you add a model to the docs assistant's candidate list, add it to
+`lib/ai-registry.ts` too.
 
 ## Search index
 

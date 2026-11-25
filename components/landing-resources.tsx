@@ -1,61 +1,59 @@
 import {
   ArrowUpRight,
-  Blocks,
+  BookMarked,
+  BookOpen,
   Code2,
   GitPullRequest,
-  History,
-  Scale,
-  ShieldCheck,
+  ListChecks,
 } from "lucide-react"
 import Link from "next/link"
 
 const resources = [
   {
-    title: "Architecture",
-    description:
-      "Understand the control plane, workers, and shared foundations that keep the system together.",
-    href: "/docs/architecture",
-    icon: Blocks,
-    label: "The system",
-    details: ["Control plane", "Execution workers", "Durable storage"],
+    title: "Getting started",
+    description: "Run one deployed Agent with the open company app example.",
+    href: "/docs/getting-started",
+    icon: BookOpen,
+    label: "Tutorial",
+    details: ["01 / Deploy", "02 / Start", "03 / Read status"],
   },
   {
-    title: "Execution & recovery",
-    description:
-      "Follow a run from its first request through step records, checkpoints, and recovery.",
-    href: "/docs/architecture/execution-flow",
-    icon: History,
-    label: "The lifecycle",
-    details: ["01 / Queue", "02 / Execute", "03 / Checkpoint"],
+    title: "How-to guides",
+    description: "Add a connector, set up approvals, and call the public API.",
+    href: "/docs/guides",
+    icon: ListChecks,
+    label: "Tasks",
+    details: ["Connectors", "Approvals", "Environments"],
   },
   {
-    title: "Security",
+    title: "Reference",
     description:
-      "Explore identity, scoped credentials, and the boundaries around every action.",
-    href: "/docs/security",
-    icon: ShieldCheck,
-    label: "The boundaries",
-    details: ["Identity", "Credentials", "Approvals"],
-  },
-  {
-    title: "API & protocol",
-    description:
-      "Public contracts, authentication, and conventions for integrating with Linea.",
-    href: "/docs/api",
+      "SDK clients, the 50 registered operations, config, and the glossary.",
+    href: "/docs/reference",
     icon: Code2,
+    label: "Lookup",
+    details: ["SDK", "Public API", "Glossary"],
   },
   {
-    title: "Architecture decisions",
+    title: "Explanation",
     description:
-      "The reasoning and trade-offs behind the choices we have made.",
-    href: "/docs/decisions",
-    icon: Scale,
+      "How runs, environments, versions, and approvals fit together.",
+    href: "/docs/explanation",
+    icon: BookMarked,
+    label: "Model",
+    details: ["Runtime", "Executions", "Approvals"],
+  },
+  {
+    title: "Glossary",
+    description:
+      "Workflow, Agent, Execution, Environment, and the other code names.",
+    href: "/docs/reference/glossary",
+    icon: BookOpen,
   },
   {
     title: "Contributor guide",
-    description:
-      "Make your first change to the SDKs, the protocol, or these docs.",
-    href: "/docs/contributing",
+    description: "Change the SDKs, the protocol, or these docs.",
+    href: "/docs/guides/contributing",
     icon: GitPullRequest,
   },
 ]

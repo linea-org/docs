@@ -3,19 +3,19 @@ import Link from "next/link"
 
 const steps = [
   {
-    title: "Get started",
-    description: "Build the SDKs and run the examples from source.",
+    title: "Run one Agent",
+    description: "Start a deployed Agent with the open example.",
     href: "/docs/getting-started",
   },
   {
-    title: "Follow an execution",
-    description: "Trace a request through workers and checkpoints.",
-    href: "/docs/architecture/execution-flow",
+    title: "Call the API",
+    description: "Choose a client and read an Execution back.",
+    href: "/docs/guides/call-the-api",
   },
   {
-    title: "Make your first change",
-    description: "Change the SDKs, the protocol, or these docs.",
-    href: "/docs/contributing",
+    title: "Look up a term",
+    description: "Workflow, Agent, Execution, Environment, and the rest.",
+    href: "/docs/reference/glossary",
   },
 ]
 

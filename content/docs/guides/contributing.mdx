@@ -1,0 +1,84 @@
+---
+title: Contributing
+description: Change the open SDKs, the public protocol, or this documentation site.
+icon: GitPullRequest
+---
+
+The SDKs and the protocol are open source under Apache 2.0 in [linea-org/linea](https://github.com/linea-org/linea). This site is Apache 2.0 in [linea-org/docs](https://github.com/linea-org/docs). The hosted platform is developed privately. To report a problem with it, open an [issue](https://github.com/linea-org/linea/issues). Do not open a public issue for a vulnerability. Use the [security policy](https://github.com/linea-org/linea/blob/main/.github/SECURITY.md) and write to `contact@getlinea.app`.
+
+## Find the owning code
+
+| Change                         | Start in                         | Check alongside it                           |
+| ------------------------------ | -------------------------------- | -------------------------------------------- |
+| Public operation or shape      | `packages/protocol`              | SDK method and the generated route reference |
+| Server, browser, or native SDK | `packages/sdk`                   | Protocol and packed-package tests            |
+| React hooks or components      | `packages/sdk-react`             | `packages/sdk` user client                   |
+| Example application            | `examples`                       | The SDK it uses                              |
+| These pages                    | `content/docs` in linea-org/docs | The protocol or SDK you cite                 |
+
+A new public operation belongs in `@linealabs/protocol` before any SDK method calls it. The hosted platform has to implement it. Open an issue before starting one.
+
+## Checks for linea-org/linea
+
+Use one `feat/<slug>` or `fix/<slug>` branch per issue. Read [CONTRIBUTING.md](https://github.com/linea-org/linea/blob/main/.github/CONTRIBUTING.md). From that repository:
+
+```bash
+pnpm format:check
+pnpm check:contracts
+pnpm build
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm test:pack
+```
+
+After changing a public operation, run `pnpm generate:contracts` and commit the generated `docs/openapi.json` and `docs/route-reference.md`.
+
+Both repositories pin Node.js `24.22.1` and pnpm `10.33.4`.
+
+## Checks for this site
+
+```bash
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
+`pnpm dev` serves the site at `http://localhost:3002`.
+
+## Add or edit a page
+
+<Steps>
+
+### Put the page in one section
+
+Getting started is the tutorial. How-to guides are tasks. Reference is the SDK, the registered API, config, and the glossary. Explanation is how the public model works. Add the filename to the nearest `meta.json`.
+
+### Write the page
+
+Each page starts with a title and description. Prefer a table for a mapping, a Mermaid diagram for a flow, `Steps` for a procedure, and `Callout` for a caveat. Link to the protocol instead of copying large schemas.
+
+```mdx
+---
+title: Durable executions
+description: How a start becomes an Execution you can read back.
+---
+```
+
+### Preview
+
+```bash
+pnpm dev
+pnpm lint
+pnpm typecheck
+pnpm build
+pnpm format:check
+```
+
+</Steps>
+
+Describe behavior that is in the public SDK or protocol. When a step exists only in the hosted workspace, say that in one sentence. Do not document private platform or mobile internals. Do not publish credentials, customer data, or exploit details.
+
+The docs assistant and search index are configured with the variables in [Config](/docs/reference/config). `pnpm ingest` writes a new Upstash Vector namespace and prints `DOCS_VECTOR_NAMESPACE`.

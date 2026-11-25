@@ -1,0 +1,78 @@
+---
+title: Use environments and versions
+description: Save a Workflow draft, create a version, and start the version an Environment has bound.
+icon: GitBranch
+---
+
+An Execution runs the version its Environment selects, not the latest published one.
+
+Publishing a version and binding it to an Environment need a signed-in workspace admin. The SDK README states that those two actions happen in the hosted dashboard, not through a workspace API key. The public operation registry has no publish or bind operation.
+
+## Names you will see
+
+| Name in the API              | Where it appears                                      |
+| ---------------------------- | ----------------------------------------------------- |
+| `dev`, `production`          | Conversation `environment`                            |
+| `draft`, `dev`, `production` | Workspace execution `environment`, and signal queries |
+| `environmentId`              | Execution, Conversation, and Environment key calls    |
+
+A binding (`environmentWorkflowBindingSchema`) stores `workflowVersionId`, `workflowContractRevisionId`, `allowBackendStart`, `allowEndUserStart`, and `enabled`. There is no registered operation to read or update that binding. The hosted dashboard is where you change it.
+
+## Drafts and versions from a workspace key
+
+`Linea` in `@linealabs/sdk` sends the paths below. They are not in the protocol operation registry. Treat them as SDK client behavior, not as the compatibility contract. See [SDK reference](/docs/reference/sdk).
+
+```ts
+import { Linea } from "@linealabs/sdk"
+
+const linea = new Linea({ apiKey: process.env.LINEA_API_KEY! })
+
+const workflow = await linea.workflows.create({
+  applicationId: "app_123",
+  name: "Support triage",
+  slug: "support-triage",
+  graph: {
+    version: 1,
+    trigger: { type: "api" },
+    entryNodeId: "start",
+    nodes: [
+      { id: "start", type: "start" },
+      { id: "end", type: "end" },
+    ],
+    edges: [{ from: "start", to: "end" }],
+  },
+})
+
+await linea.workflows.saveDraft(workflow.id, nextGraph)
+const version = await linea.workflows.createVersion(workflow.id, {
+  graph: nextGraph,
+  message: "Add the triage step",
+})
+```
+
+Those workspace paths are not registry operations. Registered runtime ids are UUIDs. `saveDraft` writes the unpublished working copy. Runs keep using the published version. `createVersion` stores a `WorkflowVersion` with `graph`, `contentHash`, and optional `workflowContractRevisionId`. `publishedAt` stays unset until the hosted dashboard publishes it.
+
+`linea.workflows.run(workflow.id, { input })` starts the version bound to the dev Environment. The body field on that client is `triggerPayload`. Production starts use an Environment key.
+
+## Start the bound version
+
+```ts
+import { LineaEnvironmentClient, environmentKey } from "@linealabs/sdk/server"
+
+const production = new LineaEnvironmentClient({
+  environmentId: process.env.LINEA_ENVIRONMENT_ID!,
+  environmentKey: environmentKey(process.env.LINEA_ENVIRONMENT_KEY!),
+})
+
+const started = await production.startExecution({
+  workflowId: process.env.LINEA_WORKFLOW_ID!,
+  externalSubjectId: process.env.LINEA_SUBJECT_ID!,
+  input: { ticketId: "T-123" },
+})
+```
+
+Use `agentId` instead of `workflowId` to start an Agent. Do not send both. The binding must allow backend starts. When it does not, the stable errors are `workflow_binding_not_found`, `workflow_binding_disabled`, `workflow_start_not_allowed`, or `workflow_binding_incompatible`.
+
+`waitForExecution` polls `getExecution` every second until status is `succeeded`, `failed`, or `cancelled`. The default timeout is five minutes (`timeoutMs: 300000`). A `paused` Execution keeps the poll waiting.
+
+End-User sessions can start a Workflow with `workflowId`. They cannot start an Agent. `startEndUserExecution` has no `agentId` field.

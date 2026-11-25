@@ -1,0 +1,14 @@
+{
+  "title": "Reference",
+  "pages": [
+    "index",
+    "glossary",
+    "sdk",
+    "api",
+    "authentication",
+    "conventions",
+    "config",
+    "errors",
+    "repositories"
+  ]
+}

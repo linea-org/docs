@@ -1,6 +1,6 @@
 import { LineaMark } from "@/components/linea-mark"
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared"
-import { BookOpen, Code2, ShieldCheck } from "lucide-react"
+import { Code2, Library, ListChecks } from "lucide-react"
 import { gitConfig } from "./shared"
 
 const githubUrl = `https://github.com/${gitConfig.user}/${gitConfig.repo}`
@@ -24,19 +24,19 @@ export function homeOptions(): BaseLayoutProps {
     githubUrl,
     links: [
       {
-        text: "Architecture",
-        url: "/docs/architecture",
-        icon: <BookOpen />,
+        text: "Guides",
+        url: "/docs/guides",
+        icon: <ListChecks />,
       },
       {
-        text: "API",
-        url: "/docs/api",
+        text: "Reference",
+        url: "/docs/reference",
         icon: <Code2 />,
       },
       {
-        text: "Security",
-        url: "/docs/security",
-        icon: <ShieldCheck />,
+        text: "Explanation",
+        url: "/docs/explanation",
+        icon: <Library />,
       },
     ],
   }

@@ -1,0 +1,51 @@
+---
+title: Authentication
+description: Credential kinds on registered operations, and the headers each client sends.
+icon: KeyRound
+---
+
+`OperationDefinition` allows five `auth.kind` values: `none`, `workspace_session`, `workspace_key`, `environment_key`, and `end_user_session`.
+
+| Kind                | Who presents it                               | Header                                                       |
+| ------------------- | --------------------------------------------- | ------------------------------------------------------------ |
+| `none`              | The End-User authorization start and exchange | No credential header                                         |
+| `environment_key`   | A backend for one Environment                 | `Authorization: Bearer <key>`                                |
+| `workspace_key`     | A backend for workspace-scoped registry calls | `Authorization: Bearer <key>`                                |
+| `workspace_session` | A signed-in workspace administrator           | `Cookie` set to the session cookie you pass the admin client |
+| `end_user_session`  | A browser, edge, or native End-User client    | `Authorization: DPoP <access token>` and `DPoP`              |
+
+## Key format
+
+| Credential      | Prefix                    | Constructor                         |
+| --------------- | ------------------------- | ----------------------------------- |
+| Environment key | `lin_env_`                | `environmentKey(value)`             |
+| Workspace key   | `lin_` and not `lin_env_` | `new Linea({ apiKey })` checks this |
+
+An Environment key cannot construct `Linea`. A workspace key cannot construct `LineaEnvironmentClient`.
+
+Environment key scopes are `subjects:provision`, `executions:read`, `executions:start`, `executions:cancel`, `conversations:read`, `conversations:write`, `events:read`, `audit:read`, and `webhooks:read`.
+
+The hosted dashboard is where you create keys. The SDK README describes workspace keys under Settings, then API Keys, and Environment keys under the Environment's Backend keys tab. `POST /v1/api-keys` appears in that README and is not a registered operation, so it is not listed on the [API](/docs/reference/api) page.
+
+## End-User session
+
+`startEndUserAuthorization` body is `environmentId`, `redirectUri` (URL, max 2000 characters), and `codeChallenge` (43 characters from `[A-Za-z0-9_-]`). The response is `{ authorizationUrl }`.
+
+`exchangeEndUserAuthorization` body adds `code` (20 to 4096 characters), `state` (43 characters from `[A-Za-z0-9_-]`), and `codeVerifier` (43 to 128 characters from `[A-Za-z0-9._~-]`). The exchange result includes an `exchangeToken` starting with `lnx_` and a `dpopNonce`.
+
+`createEndUserSession` body is `{ exchangeToken }`. The credential is `accessToken` (prefix `lnu_`), `tokenType: "DPoP"`, `dpopNonce`, and `expiresAt`.
+
+Session requests may include `origin`. The protocol schema marks it optional. The SDK builds the `DPoP` proof over the method and URL.
+
+`session()` on the client returns public metadata or `undefined`. Expired sessions are dropped with their proof key. There is no refresh operation in the registry.
+
+## What each credential is for
+
+| Credential        | Registered use                                                             |
+| ----------------- | -------------------------------------------------------------------------- |
+| Environment key   | Subjects, Conversations, Executions, Environment audit, webhook deliveries |
+| Workspace key     | Workspace connector audit, regression reads                                |
+| Workspace session | Shared Connections, regression writes, triggering a regression run         |
+| End-User Session  | The `/v1/user/*` operations and session revoke                             |
+
+Member sessions for the hosted dashboard are not a registered public credential. The connection admin client is the public way to present a workspace session, and only for the operations it wraps.

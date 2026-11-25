@@ -1,0 +1,65 @@
+---
+title: Add a connector
+description: Create a shared GitHub Connection or start an End-User Connection authorization.
+icon: Cable
+---
+
+A Connection is the credentialed account a run can use. The public protocol has two authorization kinds: `delegated_user` and `github_app_installation`. Ownership is `personal` or `environment`.
+
+The hosted workspace can also add a GitHub Connection from the Environment UI. That screen is part of the hosted platform. The calls below are the registered API.
+
+Workflow graphs accept a node whose `type` is `connector`. The public SDK types `config` as an open record. The protocol does not define the fields inside that config.
+
+## Shared GitHub installation
+
+`LineaConnectionAdminClient` uses a workspace administrator session cookie, not an API key. It calls the shared-connection operations.
+
+```ts
+import { LineaConnectionAdminClient } from "@linealabs/sdk/server"
+
+const admin = new LineaConnectionAdminClient({
+  environmentId: process.env.LINEA_ENVIRONMENT_ID!,
+  sessionCookie: process.env.LINEA_SESSION_COOKIE!,
+})
+
+const connection = await admin.createGithubInstallation({
+  appClientId: process.env.GITHUB_APP_CLIENT_ID!,
+  installationId: Number(process.env.GITHUB_INSTALLATION_ID),
+  privateKey: process.env.GITHUB_APP_PRIVATE_KEY!,
+  permissions: { metadata: "read", issues: "write" },
+})
+```
+
+`permissions.metadata` is `read`. At least one of `issues` or `pull_requests` is required, and each is `read` or `write`. `installationId` is a positive integer. `privateKey` is the GitHub App private key.
+
+Then grant a requester and assign a reviewer. Both take an External Subject id:
+
+```ts
+await admin.grantAccess(connection.id, requesterSubjectId)
+await admin.assignReviewer(connection.id, reviewerSubjectId)
+```
+
+`listConnections` lists the Environment's shared Connections. `revokeConnection` revokes one. Revoked authority is not restored by a later call.
+
+## End-User Connection
+
+An End-User client never takes an API key. After `completeAuthorization`, start provider authorization in the browser:
+
+```ts
+import { LineaUserClient } from "@linealabs/sdk/user"
+
+const client = new LineaUserClient({
+  environmentId: process.env.LINEA_ENVIRONMENT_ID!,
+})
+
+const authorization = await client.startConnectionAuthorization({
+  provider, // 1 to 64 characters, matching ^[a-z][a-z0-9_-]*$
+  returnUri: `${location.origin}/connections/callback`,
+})
+```
+
+The public protocol does not enumerate `provider` values for this call. The only shared-installation operation in the registry is the GitHub App installation above.
+
+`startConnectionAuthorization` returns `authorizationUrl`. `launchConnectionAuthorization` binds that authorization to the initiating browser. `getConnection` reads one Connection. `revokeConnection` revokes it. `startConnectionScopeUpgrade` asks for a new scope set. `listConnectionUses` lists uses for one Connection.
+
+Connection status is `active`, `reauthorization_required`, or `revoked`.

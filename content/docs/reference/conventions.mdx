@@ -1,0 +1,43 @@
+---
+title: API conventions
+description: Versioning, async starts, errors, pagination, and idempotency for registered operations.
+icon: Braces
+---
+
+## Versioning
+
+Registered developer operations use the `/v1` prefix. Webhook envelopes set `version` to `1`. Clients ignore object fields they do not know. `streamEvents` skips unknown event types. `verifyWebhook` accepts an unknown event type with `envelope: null`.
+
+The compatibility list is `operationRegistry`. When you add an operation, put it in `@linealabs/protocol`, cover its auth and errors, and run `pnpm generate:contracts` in `linea-org/linea`.
+
+## Asynchronous starts
+
+`startEnvironmentExecution` and `startEndUserExecution` respond with `202` and a public Execution. The graph is not finished when that response arrives. Read `getEnvironmentExecution` or `getEndUserExecution` for later status.
+
+## Errors
+
+The protocol error body is:
+
+```json
+{ "error": { "code": "resource_not_found", "message": "..." } }
+```
+
+`code` is a [stable error code](/docs/reference/errors). The workspace `Linea` client also accepts a Nest-style `message` string or an array of issue objects. That shape is not the protocol envelope.
+
+## Pagination
+
+Operations that use `paginationQuerySchema` take `cursor` and `limit`. `limit` is an integer from 1 to 100 and defaults to 20. Their page is `{ data, nextCursor }`. `nextCursor` is `null` on the last page. Some registered lists, including shared Environment Connections, return an array and take no cursor. Check the route reference for that operation.
+
+Regression run listing is described in operation metadata as bounded by `limit` with no continuation cursor. Use the route reference before relying on a second page.
+
+Workspace `executions.list` uses a different page. See the [SDK](/docs/reference/sdk) page.
+
+## Idempotency
+
+The header name is `Idempotency-Key`. The value is 1 to 255 characters of printable ASCII. Environment and End-User mutations that declare the header require it. `LineaEnvironmentClient` and `LineaUserClient` generate a UUID when you do not pass one.
+
+`ServerTransport` retries a `GET`, or any call that has an idempotency key, on status `429`, `502`, `503`, and `504`. It stops after three attempts. The workspace `request` helper does not retry.
+
+## Ordering
+
+Event streams resume with `Last-Event-ID`. Message `sequence` is a positive integer on the message resource. Do not sort an event stream by timestamp alone. The route reference states the ordering for each operation.

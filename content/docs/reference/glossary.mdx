@@ -1,0 +1,41 @@
+---
+title: Glossary
+description: Names used by the public protocol and SDKs.
+icon: Library
+---
+
+Definitions follow the public TypeScript names in `@linealabs/protocol` and `@linealabs/sdk` at commit `d8ce4e5`.
+
+| Term              | Code name                          | Meaning                                                                                                                                                    |
+| ----------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Workspace         | `workspaceId`                      | The tenant id on workspace records such as `Workflow` and `Signal`.                                                                                        |
+| Application       | `applicationId`                    | The id a `Workflow` belongs to. Bindings also store it.                                                                                                    |
+| Operator          | caller text in operation metadata  | The workspace side. Metadata calls this an Operator session or an Operator backend. There is no `Operator` schema.                                         |
+| End User          | `LineaUserClient`                  | The person using a customer's app. Their client is `@linealabs/sdk/user`.                                                                                  |
+| External Subject  | `externalSubjectSchema`            | Linea's id for an End User inside a workspace. Status is `provisioned`, `verified`, `disabled`, or `erased`.                                               |
+| Environment       | `environmentId`                    | The boundary for keys, Connections, and runtime starts. Conversation records use `dev` or `production`. Workspace executions and signals also use `draft`. |
+| Environment key   | `environmentKey`                   | A server credential. The value starts with `lin_env_`.                                                                                                     |
+| Workspace key     | `Linea` `apiKey`                   | A server credential for the workspace client. The value starts with `lin_` and must not start with `lin_env_`.                                             |
+| End-User Session  | `endUserSessionCredentialSchema`   | A short-lived DPoP credential. `tokenType` is `DPoP`. The access token starts with `lnu_`.                                                                 |
+| Workflow          | `Workflow`                         | A named graph owned by one Application. Fields include `slug`, `draftGraph`, and `publishedVersionId`.                                                     |
+| Workflow version  | `WorkflowVersion`                  | An immutable `graph` plus `contentHash`, `version`, and optional `workflowContractRevisionId`.                                                             |
+| Workflow Contract | `workflowContractRevisionSchema`   | A numbered revision with `inputSchema` and `outputSchema` JSON Schemas.                                                                                    |
+| Contract binding  | `environmentWorkflowBindingSchema` | The record that points an Environment at one `workflowVersionId` and one contract revision.                                                                |
+| Agent             | `agentId` on "Start of an Agent"   | A start target on `POST /v1/environments/{environmentId}/executions`. The public protocol does not define an Agent authoring schema.                       |
+| Execution         | `publicExecutionSchema`            | One run. Status is `queued`, `running`, `paused`, `succeeded`, `failed`, or `cancelled`.                                                                   |
+| Step              | `WorkspaceExecutionStep`           | One node attempt on a workspace execution detail: `nodeId`, `sequence`, `attempt`, `status`, input, and output.                                            |
+| Approval Request  | `approvalRequestSchema`            | A durable pause. Status is `pending`, `decided`, or `cancelled`.                                                                                           |
+| Decision          | `approvalDecisionSchema`           | The response to one Approval Request. `outcome` is `approved` or `rejected`. `reason` is `human` or `timeout`.                                             |
+| Action Intent     | `pendingActionIntentSchema`        | A proposed external operation waiting on an End User, tied to a Connection and an Approval Request.                                                        |
+| Signal            | `signalSchema`                     | A grouped pattern for one `flagType` and `signalKey`. Summary status is `open`, `resolved`, or `regressed`.                                                |
+| Flag              | `flagSchema`                       | One occurrence that can point at a Signal, an Execution, and a node.                                                                                       |
+| Connector         | node type `connector`              | A Workflow node type. Connector audit events use the `connectorAuditFactTypeSchema` names. There is no Connector resource.                                 |
+| Connection        | `connectionSchema`                 | A credentialed provider account. `ownership` is `personal` or `environment`. `authorizationKind` is `delegated_user` or `github_app_installation`.         |
+| Connection use    | `connectionUseSchema`              | One use of a Connection. `classification` is `read` or `side_effect`.                                                                                      |
+| Conversation      | `conversationSchema`               | A thread for one External Subject, Environment, and Workflow. Status is `active` or `closed`.                                                              |
+| Message           | `messageSchema`                    | One turn in a Conversation. `role` is `user` or `assistant`.                                                                                               |
+| Regression Case   | `listRegressionCases`              | A saved case on a Workflow. Creating one requires a workspace administrator session.                                                                       |
+| Regression Run    | `RegressionRun`                    | A run of saved cases. `Linea.regressions` can list and get runs.                                                                                           |
+| Webhook           | `webhookEnvelopeSchema`            | A signed event envelope, `version: 1`, with a `type` from the event list.                                                                                  |
+
+`conversationFindingId` and `sourceFindingId` are identifier fields. The public protocol does not define a Finding resource.

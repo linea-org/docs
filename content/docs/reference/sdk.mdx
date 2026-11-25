@@ -1,0 +1,180 @@
+---
+title: SDK
+description: Public clients in @linealabs/sdk and @linealabs/sdk-react, and the paths they call.
+icon: Boxes
+---
+
+Packages at commit `d8ce4e5`. Neither package is on npm. `@linealabs/protocol` is a workspace package bundled into the SDKs. Its export paths are `.`, `./errors`, `./events`, `./operations`, `./resources`, `./shared`, and `./webhooks`.
+
+| Package                | Entry          | Use                                                             |
+| ---------------------- | -------------- | --------------------------------------------------------------- |
+| `@linealabs/sdk`       | `.`            | `Linea`, errors, and server re-exports                          |
+| `@linealabs/sdk`       | `./server`     | `Linea`, `LineaEnvironmentClient`, `LineaConnectionAdminClient` |
+| `@linealabs/sdk`       | `./user`       | `LineaUserClient`                                               |
+| `@linealabs/sdk`       | `./webhooks`   | `verifyWebhook`                                                 |
+| `@linealabs/sdk-react` | `.`            | Hooks and `ApprovalRequest`                                     |
+| `@linealabs/sdk-react` | `./copilotkit` | `CopilotKitApprovalAction`                                      |
+
+Default API origin is `https://api.getlinea.app`. See [Config](/docs/reference/config).
+
+## LineaEnvironmentClient
+
+Import from `@linealabs/sdk/server`. Every method calls a registered operation. The client sends `Idempotency-Key` on mutations and generates one when you omit it.
+
+| Method                  | Operation                             |
+| ----------------------- | ------------------------------------- |
+| `provisionSubject`      | `provisionEnvironmentSubject`         |
+| `createConversation`    | `createEnvironmentConversation`       |
+| `listConversations`     | `listEnvironmentConversations`        |
+| `getConversation`       | `getEnvironmentConversation`          |
+| `startExecution`        | `startEnvironmentExecution`           |
+| `getExecution`          | `getEnvironmentExecution`             |
+| `waitForExecution`      | Polls `getExecution`                  |
+| `cancelExecution`       | `cancelEnvironmentExecution`          |
+| `listWebhookDeliveries` | `listWebhookDeliveries`               |
+| `listAuditEvents`       | `listEnvironmentConnectorAuditEvents` |
+
+`startExecution` accepts a Workflow body (`workflowId`, `externalSubjectId`, optional `conversationId`, `input`) or an Agent body (`agentId`, `externalSubjectId`, `input`).
+
+`waitForExecution` uses `intervalMs` (default `1000`) and `timeoutMs` (default `300000`). It returns when status is `succeeded`, `failed`, or `cancelled`. `paused` keeps waiting. The deadline throws `LineaTimeoutError`.
+
+## LineaUserClient
+
+Import from `@linealabs/sdk/user`. This entry does not accept an API key.
+
+| Method                          | Operation                                                   |
+| ------------------------------- | ----------------------------------------------------------- |
+| `startAuthorization`            | `startEndUserAuthorization`                                 |
+| `completeAuthorization`         | `exchangeEndUserAuthorization`, then `createEndUserSession` |
+| `revoke`                        | `revokeEndUserSession`                                      |
+| `startConnectionAuthorization`  | `startConnectionAuthorization`                              |
+| `launchConnectionAuthorization` | `launchConnectionAuthorization`                             |
+| `getConnectionAuthorization`    | `getConnectionAuthorization`                                |
+| `listConnections`               | `listConnections`                                           |
+| `getConnection`                 | `getConnection`                                             |
+| `startConnectionScopeUpgrade`   | `startConnectionScopeUpgrade`                               |
+| `listConnectionUses`            | `listConnectionUses`                                        |
+| `revokeConnection`              | `revokeConnection`                                          |
+| `createConversation`            | `createEndUserConversation`                                 |
+| `listConversations`             | `listEndUserConversations`                                  |
+| `getConversation`               | `getEndUserConversation`                                    |
+| `sendMessage`                   | `createEndUserMessage`                                      |
+| `listMessages`                  | `listEndUserMessages`                                       |
+| `startExecution`                | `startEndUserExecution`                                     |
+| `getExecution`                  | `getEndUserExecution`                                       |
+| `listApprovalRequests`          | `listEndUserApprovalRequests`                               |
+| `getApprovalRequest`            | `getEndUserApprovalRequest`                                 |
+| `decide`                        | `decideEndUserApprovalRequest`                              |
+| `listPendingActionIntents`      | `listPendingActionIntents`                                  |
+| `listAuditEvents`               | `listEndUserConnectorAuditEvents`                           |
+| `streamEvents`                  | `streamEndUserEvents`                                       |
+
+`startExecution` takes `workflowId`, optional `conversationId`, and `input`. It returns a `LineaExecutionHandle`.
+
+`streamEvents` uses `Last-Event-ID` and can emit `{ kind: "reconciled", approvalRequests }`. Unknown event types are skipped. Options include `conversationId`, `eventType`, `signal`, and `reconnectDelayMs`.
+
+Browsers store session state in IndexedDB. Edge runtimes keep it in memory. React Native must pass `storage` and `proofKeys`. `proofKeys` returns a key id and public JWK. Private key material stays in the platform key store.
+
+## LineaConnectionAdminClient
+
+Import from `@linealabs/sdk/server`. Construct it with `sessionCookie`. Methods map to the shared-connection operations: `listConnections`, `createGithubInstallation`, `getAuthorities`, `grantAccess`, `revokeAccess`, `assignReviewer`, `revokeReviewer`, `revokeConnection`. `listAuditEvents` calls `listWorkspaceConnectorAuditEvents` with the client's `environmentId` as a query.
+
+## Linea workspace client
+
+`new Linea({ apiKey })` is server-only. The key's scopes apply to the whole workspace. Methods below are implemented by the SDK. Their paths are not in the protocol operation registry, except `auditEvents.list` and the regression reads, which are registered.
+
+The client prefixes every path with `/v1`. It does not retry.
+
+### workflows
+
+| Method          | HTTP                                                         |
+| --------------- | ------------------------------------------------------------ |
+| `list`          | `GET /v1/workflows`                                          |
+| `get`           | `GET /v1/workflows/{workflowId}`                             |
+| `create`        | `POST /v1/workflows`                                         |
+| `update`        | `PATCH /v1/workflows/{workflowId}`                           |
+| `archive`       | `PATCH /v1/workflows/{workflowId}` with `{ archived: true }` |
+| `saveDraft`     | `PUT /v1/workflows/{workflowId}/draft` with `{ graph }`      |
+| `createVersion` | `POST /v1/workflows/{workflowId}/versions`                   |
+| `listVersions`  | `GET /v1/workflows/{workflowId}/versions`                    |
+| `getVersion`    | `GET /v1/workflows/{workflowId}/versions/{versionId}`        |
+| `run`           | `POST /v1/workflows/{workflowId}/executions`                 |
+
+`create` body is `applicationId`, `name`, `slug`, optional `description`, optional `graph`. `run` body is `triggerPayload` and optional `externalSubjectId`. `run` starts the version bound to the dev Environment.
+
+`WorkflowGraph` is `{ version: 1, trigger, entryNodeId, nodes, edges }`. `trigger.type` is `manual`, `schedule` (`cron`, `timezone`), `webhook`, or `api`. Node `type` is one of:
+
+`start`, `end`, `http`, `connector`, `transform`, `branch`, `ai`, `agent`, `extract`, `evaluator`, `approval`, `memory`, `wait`, `datetime`, `filter`, `merge`, `variables`.
+
+`config` is an open record. The protocol does not define per-node options.
+
+### executions
+
+| Method            | HTTP                                         |
+| ----------------- | -------------------------------------------- |
+| `get`             | `GET /v1/workspace/executions/{executionId}` |
+| `list`            | `GET /v1/executions`                         |
+| `listForWorkflow` | `GET /v1/workflows/{workflowId}/executions`  |
+| `countNew`        | `GET /v1/executions/new-count`               |
+| `wait`            | Polls `get`                                  |
+
+`list` query is `status`, `trigger`, `sort`, and `cursor`. `sort` is `workflow`, `status`, `trigger`, `duration`, `cost`, or `when`, plus `.asc` or `.desc`. The page is `{ executions, hasMore, nextCursor, changed, total }`. `total` is informational. A cursor is valid only with the sort that issued it. When `changed` is true, start again from the first page if you need every run once.
+
+`listForWorkflow` returns at most 50 rows. The SDK has no further page for that call.
+
+`get` returns `{ execution, steps, nodeConfigs, replayable, waitingNodes, pausedAtNode }`. `costMicros` on the execution and on each step is a decimal string.
+
+`wait` uses the same defaults as `waitForExecution`.
+
+### signals
+
+| Method    | HTTP                                  |
+| --------- | ------------------------------------- |
+| `list`    | `GET /v1/signals`                     |
+| `trend`   | `GET /v1/signals/trend`               |
+| `get`     | `GET /v1/signals/{signalId}`          |
+| `resolve` | `POST /v1/signals/{signalId}/resolve` |
+
+`list` and `trend` take optional `workflowId`. `get` takes optional `environment`: `production`, `dev`, or `draft`. The SDK comment says the server default is `production`.
+
+### regressions and audit
+
+| Method                  | Registered operation                |
+| ----------------------- | ----------------------------------- |
+| `regressions.listCases` | `listRegressionCases`               |
+| `regressions.listRuns`  | `listRegressionRuns`                |
+| `regressions.getRun`    | `getRegressionRun`                  |
+| `auditEvents.list`      | `listWorkspaceConnectorAuditEvents` |
+
+`createRegressionCaseFromStep`, `createRegressionCaseFromFlag`, `archiveRegressionCase`, and `triggerRegressionRun` are registered and require a workspace administrator session. The SDK does not wrap them. The metadata says a workspace API key cannot call those writes.
+
+## React hooks
+
+| Export                                    | Role                                        |
+| ----------------------------------------- | ------------------------------------------- |
+| `LineaUserProvider`, `useLineaUserClient` | Holds a `LineaUserClient`                   |
+| `useConversation`                         | Conversation state                          |
+| `useExecution`                            | Execution state                             |
+| `useApprovalRequests`                     | Approval list and connection state          |
+| `useDecision`                             | Calls `decide`                              |
+| `ApprovalRequest`                         | Presentation for one request                |
+| `CopilotKitApprovalAction`                | Renders `linea_approval_request` tool calls |
+
+`useDecision` returns `decide(approvalRequestId, input)`. `input.decision` is `approved` or `rejected`.
+
+## Webhooks
+
+`verifyWebhook` checks an HMAC-SHA256 signature. The signed payload is `timestamp`, `.`, `eventId`, `.`, then the raw body. The header value matches `v1=` plus 64 hex characters. `timestampToleranceSeconds` is an integer from 1 to 300. A previous secret is accepted until `previousSecretExpiresAt`.
+
+Unknown event types return `valid: true` and `envelope: null`. Known `type` values are `execution.completed`, `execution.failed`, `approval_request.created`, `approval_request.decided`, `approval_request.cancelled`, `action_intent.executed`, `action_intent.failed`, and `connection.revoked`.
+
+## Errors thrown by the root client
+
+| Class                | When                                                                          |
+| -------------------- | ----------------------------------------------------------------------------- |
+| `LineaApiError`      | The server returned an error status. `status`, `message`, and `body` are set. |
+| `LineaNetworkError`  | The request produced no usable response.                                      |
+| `LineaProtocolError` | A protocol client received a body or status it does not accept.               |
+| `LineaTimeoutError`  | `wait` or `waitForExecution` passed `timeoutMs`.                              |
+
+The user client throws `LineaUserApiError`, `LineaUserNetworkError`, `LineaUserProtocolError`, and `LineaUserSessionError`.
