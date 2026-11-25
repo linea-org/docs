@@ -50,3 +50,7 @@ pnpm ingest
 
 The command writes to a fresh namespace and prints the
 `DOCS_VECTOR_NAMESPACE` value to deploy.
+
+## License
+
+[Apache License 2.0](LICENSE).
